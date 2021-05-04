@@ -1,9 +1,13 @@
 import React, { useContext, useState } from 'react';
 import { TimerContext } from '../objects/TimerContext'
+import { QuizCategory } from '../objects/Entities';
+import { CurrentQuizContext } from '../objects/CurrentQuizContext';
 
 // Context で利用する変数をオブジェクトごとに定義
-type ContextProps = {
+export type ContextProps = {
     timerContext: TimerContext
+    quizContext?: QuizCategory
+    currentQuizContext?: CurrentQuizContext
 }
 
 const Context = React.createContext<ContextProps>({
@@ -16,6 +20,30 @@ const Context = React.createContext<ContextProps>({
         setTimerSetFlg: () => {},
         timerDispFlg: false,
         setTimerDispFlg: () => {},
+    },
+    quizContext: {
+        categoryId: 0,
+        categoryText: "DUMMY_QUIZ_CATEGORY",
+        quizList: [{
+            quizId: 0,
+            quizCategoryId: 0,
+            quizText: "DUMMY_QUIZ",
+            choiceCount: 0,
+            choiceList: [{
+                choiceId: 0,
+                quizId: 0,
+                choiceText: "DUMMY_CHOICE",
+                answerFlg: false,
+                answerNum: 0,
+            }],
+        }],
+    },
+    currentQuizContext: {
+        categoryId: 0,
+        quizId: 0,
+        quizText: 'default',
+        quizCount: 0,
+        choiceList: []
     }
 })
 
@@ -43,6 +71,6 @@ const ContextProvider: React.FC = ({children}) => {
     )
 }
 
-const useAppContext = () => useContext(Context)
+const useAppContext = () => useContext<ContextProps>(Context)
 
 export { ContextProvider, useAppContext }

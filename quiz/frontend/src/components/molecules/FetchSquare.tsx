@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Square from '../atoms/Square';
 import { container, ContainerProps } from '../component';
 import axios from 'axios';
-import { Quizes } from '../objects/Quizes';
+import { Quiz } from '../objects/Entities';
 
 type ComponentProps = {}
 type PresenterProps = {
@@ -13,7 +13,7 @@ const FetchSquarePresenter: React.FC<PresenterProps> = (props) => (
 )
 
 const FetchSquareContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = (props) => {
-    const [quizes, setQuizes] = useState(new Array<Quizes>(2))
+    const [quizes, setQuizes] = useState(new Array<Quiz>(2))
 
     useEffect(() => {
         axios.get('/api/quizget')
@@ -23,7 +23,7 @@ const FetchSquareContainer: React.FC<ContainerProps<ComponentProps, PresenterPro
 
     let quizname = ""
     quizes.map(quiz => {
-        quizname += quiz.quizName
+        quizname += quiz.quizText
     })
 
     return props.presenter({quizname: quizname, ...props})

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ContainerProps, container } from '../component';
 import styled from 'styled-components';
 import { useAppContext } from './Context'
@@ -43,6 +43,7 @@ const TimerStyled = styled(TimerPresenter)`
 
 
 const TimerContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, ...props}) => {
+    /* eslint-disable */
     const {timerContext} = useAppContext()
 
     const [localTime, setLocalTime] = useState(timerContext.time)
@@ -77,7 +78,8 @@ const TimerContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> =
         clearInterval(timeIntervalRef.current)
         setLocalTime(timeRef.current)
     }, [timerContext.timerFlg])
-
+    /* eslint-enable */
+    
     const tick = () => {
         if (timeRef.current === 0) {
             clearInterval(timeIntervalRef.current);

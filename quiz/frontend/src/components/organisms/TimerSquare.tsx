@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import BlockLabel from '../atoms/BlockLabel';
 import Button from '@material-ui/core/Button';
 import { container, ContainerProps } from '../component';
 import { useAppContext } from '../atoms/Context'
 import PanelDiv from '../atoms/PanelDiv';
+import { TimerContext } from '../objects/TimerContext';
 
 type ComponentProps = {}
 type PresenterProps = {
@@ -89,9 +89,10 @@ const StyledButton = styled(Button)`
 
 const TimerSquareContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, ...props}) => {
     // timer
-    const {timerContext} = useAppContext()
+    const timerContext: TimerContext = useAppContext().timerContext
     const {timerFlg, setTime, setTimerFlg, setTimerSetFlg, setTimerDispFlg} = timerContext
 
+    /* eslint-disable */
     const onClickStart: () => void = React.useCallback(() => {
             if (!timerFlg) {
                 setTimerFlg(timerFlg => !timerFlg)
@@ -123,6 +124,7 @@ const TimerSquareContainer: React.FC<ContainerProps<ComponentProps, PresenterPro
         audio.pause()
         audio.currentTime = 0
     },[])
+    /* eslint-enable */
 
     // onClick でフラグを反転
     return presenter({ 

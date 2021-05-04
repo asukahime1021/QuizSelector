@@ -1,10 +1,8 @@
 import React from 'react';
 import { container, ContainerProps } from '../component';
 import TimerSquare from './TimerSquare';
-import {makeStyles, createStyles, Theme} from '@material-ui/core/styles'
+import { makeStyles, createStyles } from '@material-ui/core/styles'
 import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import Slider from '@material-ui/core/Slider';
 import { ClassNameMap } from '@material-ui/styles';
 import BgmSquare from './BgmSquare';
 
@@ -15,7 +13,7 @@ type PresenterProps = {
     classes: ClassNameMap
 }
 
-const useStyled = makeStyles((theme: Theme) => {
+const useStyled = makeStyles(() => {
     return createStyles({
         panelselect: {
             minWidth: 120,
@@ -39,6 +37,7 @@ const TimerBgmControlAreaPresenter: React.FC<PresenterProps> = ({onChangeSelect,
           autoWidth 
           onChange={onChangeSelect}
           className={classes.panelselect}
+          defaultValue="1"
           >
             <option value="1" style={{fontSize: "7px"}}>タイマー</option>
             <option value="2" style={{fontSize: "7px"}}>BGM</option>

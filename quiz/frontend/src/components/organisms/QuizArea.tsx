@@ -8,10 +8,12 @@ type ComponentProps = {
     className?: string
 }
 
-type PresenterProps = ComponentProps
+type PresenterProps = ComponentProps & {
+    background: string
+}
 
-const QuizAreaPresenter: React.FC<PresenterProps> = () => (
-    <QuizAreaStyled>
+const QuizAreaPresenter: React.FC<PresenterProps> = ({background, ...props}) => (
+    <QuizAreaStyled background={background}>
         <TimerArea>
             <Timer />
         </TimerArea>
@@ -24,24 +26,23 @@ const TimerArea = styled.div`
     right:0px;
 `
 
-const QuizAreaStyled = styled.div`
+type QuizAreaStyledProps = {
+    background: string
+}
+const QuizAreaStyled = styled.div<QuizAreaStyledProps>`
     position: relative;
     height: 72vh;
     width: 128vh;
     margin: 0 auto;
     background-color: #b2b5e0;
-    background-image: url("select_rush_png.png");
+    background-image: url(${props => props.background});
     background-size: contain;
 `
-// const GridStyled = styled(Grid)`
-//     height: 72vh;
-//     display: flex;
-//     flex-direction: column;
-// `
 
 const QuizAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, ...props}) => {
-    console.log("quizArea")
-    return presenter(props)
+    const filePath = "img/select_rush_png.png"
+
+    return presenter({background: filePath, ...props})
 }
 
 const QuizArea: React.FC<ComponentProps> = container<ComponentProps, PresenterProps>(

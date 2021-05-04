@@ -1,7 +1,6 @@
 import Slider from '@material-ui/core/Slider';
 import React from 'react';
 import { container, ContainerProps } from '../component';
-import styled from 'styled-components';
 import PanelDiv from '../atoms/PanelDiv';
 import BlockLabel from '../atoms/BlockLabel';
 
