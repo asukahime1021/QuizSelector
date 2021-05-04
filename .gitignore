@@ -1,0 +1,39 @@
+HELP.md
+.gradle
+quiz/build/
+!quiz/gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+.metadata/
+
+### STS ###
+quiz/.apt_generated
+quiz/.classpath
+quiz/.factorypath
+quiz/.project
+quiz/.settings
+quiz/.springBeans
+quiz/.sts4-cache
+quiz/bin/
+quiz/build/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+quiz/.idea
+quiz/*.iws
+quiz/*.iml
+quiz/*.ipr
+quiz/out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+quiz/.vscode/
