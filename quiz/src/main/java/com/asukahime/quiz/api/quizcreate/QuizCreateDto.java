@@ -1,4 +1,4 @@
-package com.asukahime.quiz.api;
+package com.asukahime.quiz.api.quizcreate;
 
 import com.asukahime.quiz.base.AbstractResponseDto;
 

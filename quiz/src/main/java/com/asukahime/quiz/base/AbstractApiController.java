@@ -9,7 +9,9 @@ import org.springframework.validation.ObjectError;
 
 public abstract class AbstractApiController<D extends AbstractResponseDto, F extends AbstractRequestForm> {
 
-	abstract protected D mainProcess(F form) throws ApplicationException;
+	private static final String SUCCESS = "000";
+
+	abstract protected D mainProcess(@NonNull F form) throws ApplicationException;
 
 	protected CommonResponseDto<D> process(@NonNull F form, @NonNull BindingResult br) {
 		final var response = new CommonResponseDto<D>();
@@ -38,10 +40,16 @@ public abstract class AbstractApiController<D extends AbstractResponseDto, F ext
 		}
 
 		response.setCode(HttpStatus.OK.value());
+		response.setErrorCode(SUCCESS);
 
 		return response;
 	}
 
+	/**
+	 * バリデーションエラーオブジェクトをフィールドごとに作成
+	 * @param error
+	 * @return
+	 */
 	@NonNull
 	private ValidationObject createValidationObject(@NonNull ObjectError error) {
 		var validationObject = new ValidationObject();

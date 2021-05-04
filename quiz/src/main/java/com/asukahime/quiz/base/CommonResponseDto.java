@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CommonResponseDto<D> implements Serializable{
+public class CommonResponseDto<D extends AbstractResponseDto> implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 

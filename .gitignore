@@ -5,6 +5,9 @@ quiz/build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 .metadata/
+quiz/h2/
+quiz/src/main/resources/public
+quiz/src/main/resources/static
 
 ### STS ###
 quiz/.apt_generated
