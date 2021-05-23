@@ -62,7 +62,7 @@ public class DataViewController {
 						.collect(Collectors.toList());
 				dto.setLibraList(stepLibraList);
 				final List<String> stepFinalList =
-						scenarioService.getScenarioStepList(scenario.getScenarioId(), 3)
+						scenarioService.getScenarioStepList(scenario.getScenarioId(), 4)
 						.stream()
 						.map(step -> cutQuizStringOrStay(step.getQuizMstId()))
 						.collect(Collectors.toList());

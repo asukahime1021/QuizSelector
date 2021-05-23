@@ -53,7 +53,7 @@ public class ScenarioEditController {
 			mav.addObject("isError", true);
 		}
 		setQuizMap(mav);
-
+		mav.addObject("success", true);
 		return mav;
 	}
 

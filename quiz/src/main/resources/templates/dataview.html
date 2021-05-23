@@ -8,13 +8,15 @@
 		text-align: center;
 	}
 	button {
-		width: 60px;
 		margin-top: 10px;
 		padding: 5px;
 		background: #3C86F5;
 		border: 1px solid #3C86F5;
 		border-radius: 3px;
 		color: #FFFFFF;
+	}
+	#dispBtn {
+		width: 60px;
 	}
 	table {
 		margin-left: auto;
@@ -68,6 +70,12 @@
 			document.getElementById('scenariodisparea').style.display="none";
 		}
 	}
+	function redirectToQuizEdit() {
+		window.location.href="/quizedit";
+	}
+	function redirectToScenarioEdit() {
+		window.location.href="/scenarioedit";
+	}
 </script>
 </head>
 <body>
@@ -76,6 +84,10 @@
 		<input type="radio" name="selectdisp" value="2"><span>クイズ</span>
 		<div>
 			<button id="dispBtn" onclick="switchDisp()" >表示</button>
+		</div>
+		<div>
+			<button id="toQuizEdit" onclick="redirectToQuizEdit()" >クイズ登録へ</button>
+			<button id="toScenarioEdit" onclick="redirectToScenarioEdit()" >シナリオ登録へ</button>
 		</div>
 	</div>
 	<div class="quiz data" id="quizdisparea">
@@ -108,6 +120,7 @@
 					<th>選択肢3</th>
 					<th>選択肢4</th>
 					<th>選択肢5</th>
+					<th>選択肢6</th>
 				</tr>
 			</thead>
 			<tbody>

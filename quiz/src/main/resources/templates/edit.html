@@ -24,13 +24,15 @@
 		margin-top: 10px;
 	}
 	button {
-		width: 60px;
 		margin-top: 10px;
 		padding: 5px;
 		background: #3C86F5;
 		border: 1px solid #3C86F5;
 		border-radius: 3px;
 		color: #FFFFFF;
+	}
+	#submitBtn {
+		width: 60px;
 	}
 	.eachchoice {
 		margin-top: 7px;
@@ -78,12 +80,18 @@
 		document.getElementById('finalChoice').style.display = "block"
 		document.getElementById('genre').style.display = "none"
 	}
+	function redirectToTop() {
+		window.location.href="/top"
+	}
 </script>
 <body>
 	<div th:if="${isError}">
 		<th:block th:each="error : ${errors}">
 			<label th:text="${error}" style="color: #EE3333; display:block">error</label>
 		</th:block>
+	</div>
+	<div th:if="${success}">
+		<label style="color: #3333EE; display:block">登録しました</label>
 	</div>
 	<form th:method="post" th:action="quizinput" th:object="${form}">
 		<div>
@@ -124,7 +132,7 @@
 				<div id="spotChoice" style="display: none">
 					<label class="block notice">※選択肢が画像の場合、ファイル名を入力してください</label>
 					<label class="block notice">正答にする選択肢を選択してください</label>
-					<th:block th:each="i : ${#numbers.sequence(1, 5)}">
+					<th:block th:each="i : ${#numbers.sequence(1, 6)}">
 						<div class="eachchoice">
 							<label th:text="'選択肢' + ${i}">選択肢1</label>
 							<span th:switch="${i}">
@@ -139,12 +147,12 @@
 				<div id="libraChoice" style="display: none">
 					<label class="block notice">※選択肢1から順に、左から右へ並びます。</label>
 					<label class="block notice">左のドロップダウンで正答順序を選択します</label>
-					<th:block th:each="i : ${#numbers.sequence(1, 4)}">
+					<th:block th:each="i : ${#numbers.sequence(1, 5)}">
 						<div class="eachchoice">
 							<label th:text="'選択肢' + ${i}">選択肢1</label>
 							<select th:name="'libraOrder' + ${i}">
 								<option th:value="'-'"></option>
-								<option th:value="${j}" th:text=${j} th:each="j : ${#numbers.sequence(1, 4)}">1</option>
+								<option th:value="${j}" th:text=${j} th:each="j : ${#numbers.sequence(1, 5)}">1</option>
 							</select>
 							<input th:name="'libraChoice' + ${i}" value="-">
 						</div>
@@ -167,7 +175,8 @@
 
 			</div>
 		</div>
-		<button type="submit">登録</button>
+		<button id="submitBtn" type="submit">登録</button>
+		<button type="button" onclick="redirectToTop()">TOP画面へ</button>
 	</form>
 </body>
 </html>

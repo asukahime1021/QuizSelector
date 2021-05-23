@@ -77,6 +77,7 @@ public class QuizEditController {
 
 		form.setCategoryId(null);
 		commonAttribute(mav, form);
+		mav.addObject("success", true);
 		return mav;
 	}
 
@@ -188,6 +189,8 @@ public class QuizEditController {
 			case "2": answerEmpty = isEmptyChoice(form.getSpotChoice2());break;
 			case "3": answerEmpty = isEmptyChoice(form.getSpotChoice3());break;
 			case "4": answerEmpty = isEmptyChoice(form.getSpotChoice4());break;
+			case "5": answerEmpty = isEmptyChoice(form.getSpotChoice5());break;
+			case "6": answerEmpty = isEmptyChoice(form.getSpotChoice6());break;
 			default: errorList.add("正答が不正な値です");
 		}
 
