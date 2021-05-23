@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>クイズ登録</title>
+</head>
+<style>
+	body{
+		width: 98%;
+		text-align: center;
+	}
+	label.block{
+		display:block;
+		font-size: 0.8rem;
+	}
+	label.notice{
+		font-size: 5px;
+		color: #555555;
+	}
+	#choices {
+		margin-top: 10px;
+	}
+	#genre {
+		margin-top: 10px;
+	}
+	button {
+		width: 60px;
+		margin-top: 10px;
+		padding: 5px;
+		background: #3C86F5;
+		border: 1px solid #3C86F5;
+		border-radius: 3px;
+		color: #FFFFFF;
+	}
+	.eachchoice {
+		margin-top: 7px;
+		font-size: 0.8rem;
+	}
+	textarea {
+		width: 300px;
+		height : 100px
+	}
+</style>
+<script>
+	function dispChoice(value) {
+		switch(value) {
+		case "1": selectRush();break;
+		case "2": selectSpot();break;
+		case "3": selectLibra();break;
+		case "4": selectFinal();break;
+		}
+	}
+	function selectRush() {
+		document.getElementById('rushChoice').style.display = "block"
+		document.getElementById('spotChoice').style.display = "none"
+		document.getElementById('libraChoice').style.display = "none"
+		document.getElementById('finalChoice').style.display = "none"
+		document.getElementById('genre').style.display = "none"
+	}
+	function selectSpot() {
+		document.getElementById('rushChoice').style.display = "none"
+		document.getElementById('spotChoice').style.display = "block"
+		document.getElementById('libraChoice').style.display = "none"
+		document.getElementById('finalChoice').style.display = "none"
+		document.getElementById('genre').style.display = "block"
+	}
+	function selectLibra() {
+		document.getElementById('rushChoice').style.display = "none"
+		document.getElementById('spotChoice').style.display = "none"
+		document.getElementById('libraChoice').style.display = "block"
+		document.getElementById('finalChoice').style.display = "none"
+		document.getElementById('genre').style.display = "none"
+	}
+	function selectFinal() {
+		document.getElementById('rushChoice').style.display = "none"
+		document.getElementById('spotChoice').style.display = "none"
+		document.getElementById('libraChoice').style.display = "none"
+		document.getElementById('finalChoice').style.display = "block"
+		document.getElementById('genre').style.display = "none"
+	}
+</script>
+<body>
+	<div th:if="${isError}">
+		<th:block th:each="error : ${errors}">
+			<label th:text="${error}" style="color: #EE3333; display:block">error</label>
+		</th:block>
+	</div>
+	<form th:method="post" th:action="quizinput" th:object="${form}">
+		<div>
+			<div id="quiz_category">
+				<label class="block">カテゴリ</label>
+				<select name="quiz_category" th:field="*{categoryId}" onchange="dispChoice(value)">
+					<option value="-" selected>-</option>
+					<option value=1>セレクトラッシュ</option>
+					<option value=2>スポットlieト</option>
+					<option value=3>バラバライブラリー</option>
+					<option value=4>ファイナル</option>
+				</select>
+			</div>
+			<div id="quiz_text">
+				<label class="block">問題文</label>
+				<textarea name="quiz_text" th:field="*{quizText}" placeholder="問題文を入力"></textarea>
+			</div>
+			<div id="genre" style="display: none">
+				<label class="block">ジャンル</label>
+				<input th:field="*{genreName}">
+			</div>
+			<div id="choices">
+
+				<div id="rushChoice" style="display: none">
+					<label class="block notice">※正答にする選択肢を選択してください</label>
+					<th:block th:each="i : ${#numbers.sequence(1, 4)}">
+						<div class="eachchoice">
+							<label th:text="'選択肢' + ${i}">label</label>
+							<span th:switch="${i}">
+								<input type="radio" th:case="1" th:field="*{rushAnswer}" th:value="${i}" checked>
+								<input type="radio" th:case="*" th:field="*{rushAnswer}" th:value="${i}">
+							</span>
+							<input th:name="'rushChoice' + ${i}" value="-">
+						</div>
+					</th:block>
+				</div>
+
+				<div id="spotChoice" style="display: none">
+					<label class="block notice">※選択肢が画像の場合、ファイル名を入力してください</label>
+					<label class="block notice">正答にする選択肢を選択してください</label>
+					<th:block th:each="i : ${#numbers.sequence(1, 5)}">
+						<div class="eachchoice">
+							<label th:text="'選択肢' + ${i}">選択肢1</label>
+							<span th:switch="${i}">
+								<input type="radio" th:case="1" th:field="*{spotAnswer}" th:value="${i}" checked>
+								<input type="radio" th:case="*" th:field="*{spotAnswer}" th:value="${i}">
+							</span>
+							<input th:name="'spotChoice' + ${i}" value="-">
+						</div>
+					</th:block>
+				</div>
+
+				<div id="libraChoice" style="display: none">
+					<label class="block notice">※選択肢1から順に、左から右へ並びます。</label>
+					<label class="block notice">左のドロップダウンで正答順序を選択します</label>
+					<th:block th:each="i : ${#numbers.sequence(1, 4)}">
+						<div class="eachchoice">
+							<label th:text="'選択肢' + ${i}">選択肢1</label>
+							<select th:name="'libraOrder' + ${i}">
+								<option th:value="'-'"></option>
+								<option th:value="${j}" th:text=${j} th:each="j : ${#numbers.sequence(1, 4)}">1</option>
+							</select>
+							<input th:name="'libraChoice' + ${i}" value="-">
+						</div>
+					</th:block>
+				</div>
+
+				<div id="finalChoice" style="display: none">
+					<label class="block notice">左のドロップダウンで正答順序を選択します</label>
+					<th:block th:each="i : ${#numbers.sequence(1, 11)}">
+						<div class="eachchoice">
+							<label th:text="'選択肢' + ${i}">選択肢1</label>
+							<select th:name="'finalOrder' + ${i}">
+								<option th:value="'-'"></option>
+								<option th:value="${j}" th:text=${j} th:each="j : ${#numbers.sequence(1, 11)}">1</option>
+							</select>
+							<input th:name="'finalChoice' + ${i}" value="-">
+						</div>
+					</th:block>
+				</div>
+
+			</div>
+		</div>
+		<button type="submit">登録</button>
+	</form>
+</body>
+</html>

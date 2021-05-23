@@ -11,13 +11,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity(name = "GENRE_MST")
-public class GenreMstEntity extends AbstractEntity{
+@Entity(name = "SCENARIO")
+public class ScenarioEntity extends AbstractEntity {
 
 	@Id
-	@Column(name = "genre_id")
-	private Integer genreId;
+	@Column(name = "SCENARIO_ID")
+	private Integer scenarioId;
 
-	@Column(name = "genre_text")
-	private String genreText;
+	@Column(name = "SCENARIO_NAME")
+	private String scenarioName;
 }

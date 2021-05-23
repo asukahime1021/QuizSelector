@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>登録データ一覧</title>
+<style>
+	body {
+		text-align: center;
+	}
+	button {
+		width: 60px;
+		margin-top: 10px;
+		padding: 5px;
+		background: #3C86F5;
+		border: 1px solid #3C86F5;
+		border-radius: 3px;
+		color: #FFFFFF;
+	}
+	table {
+		margin-left: auto;
+		margin-right: auto;
+		margin-top: 10px;
+		border-left: 1px solid #ddd;
+	}
+	td {
+		text-align: left;
+		border-right: 1px solid #ddd;
+		border-bottom: 1px solid #ddd;
+		padding: 8px;
+		max-width: 300px;
+	}
+	th {
+		border-top: 1px solid #ddd;
+		border-right: 1px solid #ddd;
+		border-bottom: 1px solid #ddd;
+		padding: 8px 10px;
+		text-align: left;
+	}
+	#scenariodisparea {
+		display: none;
+	}
+	#quizdisparea {
+		display: none;
+	}
+	table {
+		font-size: 5px;
+	}
+	table tr:nth-child(2n) {
+		background-color: #ffffff;
+	}
+	tbody tr:nth-child(2n+1) {
+		background-color: #f0f0f0;
+	}
+	thead {
+		background-color: #cccccc;
+	}
+</style>
+<script>
+	function switchDisp() {
+		const elements = document.getElementsByName('selectdisp')
+		const scenarioChecked = elements[0].checked;
+
+		if (scenarioChecked) {
+			document.getElementById('quizdisparea').style.display="none";
+			document.getElementById('scenariodisparea').style.display="block";
+		} else {
+			document.getElementById('quizdisparea').style.display="block";
+			document.getElementById('scenariodisparea').style.display="none";
+		}
+	}
+</script>
+</head>
+<body>
+	<div id="selectarea">
+		<input type="radio" name="selectdisp" value="1"><span>シナリオ</span>&nbsp&nbsp
+		<input type="radio" name="selectdisp" value="2"><span>クイズ</span>
+		<div>
+			<button id="dispBtn" onclick="switchDisp()" >表示</button>
+		</div>
+	</div>
+	<div class="quiz data" id="quizdisparea">
+		<h3>セレクトラッシュ</h3>
+		<table>
+			<thead>
+				<tr>
+					<th>問題文</th>
+					<th>選択肢1</th>
+					<th>選択肢2</th>
+					<th>選択肢3</th>
+					<th>選択肢4</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="quiz : ${rushQuizList}">
+					<td th:text="${quiz.quizText}"></td>
+					<td th:text="${choice}" th:each="choice : ${quiz.choiceList}">-</td>
+				</tr>
+			</tbody>
+		</table>
+		<h3>スポットlieト</h3>
+		<table>
+			<thead>
+				<tr>
+					<th>問題文</th>
+					<th>ジャンル</th>
+					<th>選択肢1</th>
+					<th>選択肢2</th>
+					<th>選択肢3</th>
+					<th>選択肢4</th>
+					<th>選択肢5</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="quiz : ${liteQuizList}">
+					<td th:text="${quiz.quizText}"></td>
+					<td th:text="${quiz.genre}"></td>
+					<td th:text="${choice}" th:each="choice : ${quiz.choiceList}">-</td>
+				</tr>
+			</tbody>
+		</table>
+		<h3>バラバライブラリー</h3>
+		<table>
+			<thead>
+				<tr>
+					<th>問題文</th>
+					<th>選択肢1</th>
+					<th>選択肢2</th>
+					<th>選択肢3</th>
+					<th>選択肢4</th>
+					<th>選択肢5</th>
+				</tr>
+			</thead>
+			<tbody>
+				<th:block th:each="quiz : ${libraQuizList}">
+					<tr>
+						<td th:text="${quiz.quizText}" rowspan="2"></td>
+						<td th:text="${choice}" th:each="choice : ${quiz.choiceList}">-</td>
+					</tr>
+					<tr>
+						<td th:text="${quiz.answerOrderStr}" colspan="5">-</td>
+					</tr>
+				</th:block>
+			</tbody>
+		</table>
+		<h2>FINAL</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>問題文</th>
+					<th>選択肢1</th>
+					<th>選択肢2</th>
+					<th>選択肢3</th>
+					<th>選択肢4</th>
+					<th>選択肢5</th>
+					<th>選択肢6</th>
+					<th>選択肢7</th>
+					<th>選択肢8</th>
+					<th>選択肢9</th>
+					<th>選択肢10</th>
+					<th>選択肢11</th>
+				</tr>
+			</thead>
+			<tbody>
+				<th:block th:each="quiz : ${finalQuizList}">
+					<tr>
+						<td th:text="${quiz.quizText}" rowspan="2"></td>
+						<td th:text="${choice}" th:each="choice : ${quiz.choiceList}">-</td>
+					</tr>
+					<tr>
+						<td th:text="${quiz.answerOrderStr}" colspan="11">-</td>
+					</tr>
+				</th:block>
+			</tbody>
+		</table>
+	</div>
+	<div class="scenario data" id="scenariodisparea">
+		<table>
+			<tr>
+				<th>NO</th>
+				<th>シナリオ名</th>
+				<th>セレクトラッシュ</th>
+				<th>スポットlieト</th>
+				<th>バラバライブラリー</th>
+				<th>FINAL</th>
+			</tr>
+			<tr th:each="scenario : ${scenarioList}">
+				<td th:text="${scenario.rowNum}"></td>
+				<td th:text="${scenario.scenarioName}"></td>
+				<td>
+					<p th:text="${text}" th:each="text : ${scenario.rushList}"></p>
+				</td>
+				<td>
+					<p th:text="${text}" th:each="text : ${scenario.liteList}"></p>
+				</td>
+				<td>
+					<p th:text="${text}" th:each="text : ${scenario.libraList}"></p>
+				</td>
+				<td>
+					<p th:text="${text}" th:each="text : ${scenario.finalList}"></p>
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

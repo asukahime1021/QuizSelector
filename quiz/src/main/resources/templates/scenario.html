@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>シナリオ登録</title>
+</head>
+<style>
+	body{
+		width: 98%;
+		text-align: center;
+	}
+	label.block{
+		display:block;
+		font-size: 0.8rem;
+	}
+	label.notice{
+		font-size: 5px;
+		color: #555555;
+	}
+	button {
+		width: 60px;
+		margin-top: 10px;
+		padding: 5px;
+		background: #3C86F5;
+		border: 1px solid #3C86F5;
+		border-radius: 3px;
+		color: #FFFFFF;
+	}
+	.eachchoice {
+		margin-top: 7px;
+		font-size: 0.8rem;
+	}
+	textarea {
+		width: 300px;
+		height : 100px
+	}
+	div.space {
+		height: 30px;
+	}
+	.selectwidth {
+		width: 200px;
+	}
+</style>
+<script>
+</script>
+<body>
+	<div th:if="${isError}">
+		<th:block th:each="error : ${errors}">
+			<label th:text="${error}" style="color: #EE3333; display:block">error</label>
+		</th:block>
+	</div>
+	<form th:method="post" th:action="scenarioinput" th:object="${form}">
+		<div>
+			<div id="scenario_name_input">
+				<label class="block">シナリオ名</label>
+				<input th:field="*{scenarioName}" />
+			</div>
+			<div class="space"></div>
+			<div class="quiz_scenario">
+				<div id="scenario_select_rush">
+					<label class="block">1st : セレクトラッシュ</label>
+					<span style="display: block" th:each="i : ${#numbers.sequence(1, 8)}">
+						<span>[[${i}]]&nbsp</span>
+						<select class="selectwidth" th:name="'scenarioSR' + ${i}">
+							<option th:value="0">-</option>
+							<option th:value="${pair.getFirst()}" th:text="${pair.getSecond()}" th:each="pair : ${quizMap.get(1)}"></option>
+						</select>
+					</span>
+				</div>
+				<div class="space"></div>
+				<div id="scenario_spot_liet">
+					<label class="block">2nd : スポットライト</label>
+					<span style="display: block" th:each="i : ${#numbers.sequence(1, 8)}">
+						<span>[[${i}]]&nbsp</span>
+						<select class="selectwidth" th:name="'scenarioSL' + ${i}">
+							<option th:value="0">-</option>
+							<option th:value="${pair.getFirst()}" th:text="${pair.getSecond()}" th:each="pair : ${quizMap.get(2)}"></option>
+						</select>
+					</span>
+				</div>
+				<div class="space"></div>
+				<div id="scenario_library">
+					<label class="block">3rd : バラバライブラリー</label>
+					<span style="display: block" th:each="i : ${#numbers.sequence(1, 8)}">
+						<span>[[${i}]]&nbsp</span>
+						<select class="selectwidth" th:name="'scenarioLR' + ${i}">
+							<option th:value="0">-</option>
+							<option th:value="${pair.getFirst()}" th:text="${pair.getSecond()}" th:each="pair : ${quizMap.get(3)}"></option>
+						</select>
+					</span>
+				</div>
+				<div class="space"></div>
+				<div id="scenario_final">
+					<label class="block">Final : ファイナル</label>
+					<span style="display: block" th:each="i : ${#numbers.sequence(1, 8)}">
+						<span>[[${i}]]&nbsp</span>
+						<select class="selectwidth" th:name="'scenarioFI' + ${i}">
+							<option th:value="0">-</option>
+							<option th:value="${pair.getFirst()}" th:text="${pair.getSecond()}" th:each="pair : ${quizMap.get(4)}"></option>
+						</select>
+					</span>
+				</div>
+			</div>
+		</div>
+		<button type="submit">登録</button>
+	</form>
+</body>
+</html>

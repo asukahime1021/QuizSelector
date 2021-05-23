@@ -45,4 +45,12 @@ public class ChoiceService {
 	public List<ChoiceEntity> insertAll(@NonNull final List<ChoiceEntity> entities) {
 		return choiceRepository.saveAll(entities);
 	}
+
+	/**
+	 * 選択肢の採番
+	 * @return
+	 */
+	public Integer getNextId() {
+		return ((int)choiceRepository.count()) + 1;
+	}
 }

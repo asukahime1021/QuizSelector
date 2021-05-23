@@ -2,8 +2,6 @@ package com.asukahime.quiz.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import com.asukahime.quiz.base.AbstractEntity;
@@ -17,11 +15,10 @@ import lombok.Setter;
 public class QuizMstEntity extends AbstractEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer quizId;
+	private Integer quizId = 0;
 
 	@Column(name = "quiz_category_id")
-	private Integer quizCategoryId;
+	private Integer quizCategoryId = 0;
 
 	@Column(name = "quiz_text")
 	private String quizText;

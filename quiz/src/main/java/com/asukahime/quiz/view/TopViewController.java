@@ -7,8 +7,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class TopViewController {
 
+	/**
+	 * クイズ画面に遷移
+	 * @return
+	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index() {
 		return "index.html";
 	}
+
 }

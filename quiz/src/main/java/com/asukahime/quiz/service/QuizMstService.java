@@ -34,6 +34,14 @@ public class QuizMstService {
 	}
 
 	/**
+	 * 総件数+1を返却
+	 * @return
+	 */
+	public Integer getNextId() {
+		return ((int)quizMstRepository.count()) + 1;
+	}
+
+	/**
 	 * 与えられたエンティティの登録/更新
 	 * @param entity
 	 * @return
