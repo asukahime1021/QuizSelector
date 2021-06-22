@@ -4,8 +4,6 @@ import PanelDiv from '../atoms/PanelDiv';
 import { useAppContext } from '../atoms/Context'
 
 type ComponentProps = {
-    categoryId: number
-    
 }
 type PresenterProps = {}
 
@@ -16,22 +14,22 @@ const AnswerAreaPresenter: React.FC<PresenterProps> = ({children}) => (
 )
 
 const AnswerAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, ...props}) => {
-    const {quizContext} = useAppContext();
+    const {currentQuizContext} = useAppContext();
     const [child, setChild] = React.useState<React.FC<{}>>(() => <div></div>);
 
-    if (quizContext === null) {
+    if (currentQuizContext === null) {
         setChild(DefaultPanel);
     }
 
     useEffect(() => {
-        switch(quizContext?.categoryId) {
+        switch(currentQuizContext?.categoryId) {
             case 1: setChild(() => <div style={{backgroundColor: "#F00", width: "100%", height: "24vh"}}></div>);break;
             case 2: setChild(() => <div style={{backgroundColor: "#0FF", width: "100%", height: "24vh"}}></div>);break;
             case 3: setChild(() => <div style={{backgroundColor: "#F0F", width: "100%", height: "24vh"}}></div>);break;
             case 4: setChild(() => <div style={{backgroundColor: "#FF0", width: "100%", height: "24vh"}}></div>);break;
             default: setChild(DefaultPanel);
         }    
-    }, [quizContext?.categoryId])
+    }, [currentQuizContext?.categoryId])
     
     return presenter({children: child, ...props})
 }

@@ -7,6 +7,10 @@
 	body {
 		text-align: center;
 	}
+	label.block{
+		display:block;
+		font-size: 0.8rem;
+	}
 	button {
 		margin-top: 10px;
 		padding: 5px;
@@ -56,6 +60,9 @@
 	thead {
 		background-color: #cccccc;
 	}
+	div.space {
+		height: 30px;
+	}
 </style>
 <script>
 	function switchDisp() {
@@ -76,6 +83,11 @@
 	function redirectToScenarioEdit() {
 		window.location.href="/scenarioedit";
 	}
+	function redirectToQuiz() {
+		var scenarioId = document.getElementById('scenarioId').value;
+		localStorage.setItem('scenario', scenarioId);
+		window.location.href="/";
+	}
 </script>
 </head>
 <body>
@@ -88,6 +100,14 @@
 		<div>
 			<button id="toQuizEdit" onclick="redirectToQuizEdit()" >クイズ登録へ</button>
 			<button id="toScenarioEdit" onclick="redirectToScenarioEdit()" >シナリオ登録へ</button>
+		</div>
+		<div>
+			<div class="space"></div>
+			<label class="block">シナリオIDを選択</label>
+			<select id="scenarioId">
+				<option th:value="${id}" th:text="${id}" th:each="id : ${scenarioIdList}"></option>
+			</select>
+			<button id="toQuiz" onclick="redirectToQuiz()" >クイズ画面へ</button>
 		</div>
 	</div>
 	<div class="quiz data" id="quizdisparea">

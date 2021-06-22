@@ -7,18 +7,21 @@ import Grid from '@material-ui/core/Grid';
 import TimerBgmControlArea from './TimerBgmControlArea';
 import axios from 'axios';
 import QuizCategoryAnchor from '../atoms/QuizCategoryAnchor';
+import { CommonApiResponse, QuizGetCategory, QuizCategory, QuizMst, GenreMst, Choice, Scenario } from '../objects/interfaces';
+import {useAppContext} from '../atoms/Context'
+import AnswerArea from './AnswerArea';
 
 type ComponentProps = {}
 
 type PresenterProps = {
-    categories: string[]
+    categories: QuizCategory[]
 }
 
 // TODO: onClick
-const QuizCategoryAreaCall = (categories: string[]) => {
+const QuizCategoryAreaCall = (categories: QuizCategory[]) => {
     const nodes = categories.map((category, index) => {
         return (
-            <QuizCategoryAnchor key={index} text={category} onClick={() => alert(category)}/>
+            <QuizCategoryAnchor key={index} categoryId={category.categoryId} text={category.categoryText}/>
         )
     })
 
@@ -43,7 +46,8 @@ const ControlAreaPresenter: React.FC<PresenterProps> = ({categories}) => (
                 </Grid>
                 <Grid item xs={5}>
                     {/*回答エリア */}
-                    <div style={{backgroundColor: "#000", width: "100%", height: "24vh"}}></div>
+                    <AnswerArea />
+                    {/* <div style={{backgroundColor: "#000", width: "100%", height: "24vh"}}></div> */}
                 </Grid>
                 <Grid item xs={3}>
                     {/*情報エリア */}
@@ -64,71 +68,14 @@ const QuizCategoryArea = styled.div`
     }
 `
 
-// fetch用interface
-interface QuizGetCategory {
-    quizCategoryList: QuizCategory[],
-    genreMstList: GenreMst[]
-}
-
-interface QuizCategory {
-    categoryId: number,
-    categoryText: string,
-    quizMstList: QuizMst[]
-}
-
-interface GenreMst {
-    genreId: number,
-    genreText: string
-}
-
-interface QuizMst {
-    quizId: number,
-    quizCategoryId: number,
-    quizText: string,
-    choiceCount: number,
-    choiceList: Choice[]
-}
-
-interface Choice {
-    choiceId: number,
-    quizMstId: number,
-    quizCategoryId: number,
-    choiceText: string,
-    answerFlg: boolean,
-    answerNum: number
-}
-
-interface CommonApiResponse {
-    code: number,
-    errorCode: string,
-    message?: string,
-    validationResults?: []
-    response?: QuizGetCategory
-}
-
 const ControlAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = (props) => {
-    const [categoryList, setCategoryList] = React.useState([""])
-    const [apiResult, setApiResult] = React.useState({})
-
-    // APIコール
-    // [] をセットすることで初回のみ取得
+    const [categoryList, setCategoryList] = React.useState<QuizCategory[]>([{categoryId: 0, categoryText: "", quizList: []}])
+    const {quizContext} = useAppContext()
     React.useEffect(() => {
-        const getCategory = async () => {
-            await axios.get('/api/quizgetall')
-            .then(response => {
-                const result: CommonApiResponse = response.data
-                setCategoryList(() => [])
-                result.response?.quizCategoryList.map(quizCategory => categoryList.push(quizCategory.categoryText))
-                setApiResult(() => result)
-                setCategoryList(categoryList)
-            })
-            .catch(error => console.log(error))
-        }
-    
-        getCategory();
-        console.log("quizgetall called");
-    }, [])
-
+        console.log("control gets quiz data")
+        setCategoryList(() => quizContext.response!.categoryList)    
+    },[quizContext])
+    console.log("control rendering");
     return props.presenter({categories: categoryList, ...props})
 }
 

@@ -1,12 +1,16 @@
 import React from 'react'
 import { container, ContainerProps } from '../component'
+import {useAppContext} from '../atoms/Context'
 
 type ComponentProps = {
+    categoryId: number
+    text: string
+}
+
+type PresenterProps = {
     text: string
     onClick: () => void
 }
-
-type PresenterProps = ComponentProps
 
 const QuizCategoryAnchorPresenter: React.FC<PresenterProps> = ({text, onClick}) => (
     <p>
@@ -14,8 +18,12 @@ const QuizCategoryAnchorPresenter: React.FC<PresenterProps> = ({text, onClick}) 
     </p>
 )
 
-const QuizCategoryAnchorContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, ...props}) => {
-    return presenter(props)
+const QuizCategoryAnchorContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, categoryId, ...props}) => {
+    const currentQuizContext = useAppContext().currentQuizContext
+    const onClickAnchor = () => {
+        currentQuizContext.setCategoryId(() => categoryId)
+    }
+    return presenter({onClick: onClickAnchor, ...props})
 }
 
 const QuizCategoryAnchor: React.FC<ComponentProps> = container<ComponentProps, PresenterProps>(
