@@ -7,13 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class QuizGetForm extends AbstractRequestForm {
+public class ScenarioGetForm extends AbstractRequestForm{
 
 	private static final long serialVersionUID = 1L;
 
-	private Integer quizCategoryId;
-
 	private Integer scenarioId;
-
-	private boolean onlyCategory = false;
 }

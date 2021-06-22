@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,37 +40,26 @@ public class DataViewController {
 		IntStream.range(1, scenarioEntityList.size() + 1)
 			.mapToObj(i -> {
 				final ScenarioEntity scenario = scenarioEntityList.get(i - 1);
+				final int scenarioId = scenario.getScenarioId();
 				final ScenarioResponseDto dto = new ScenarioResponseDto();
 				dto.setRowNum(i);
 				dto.setScenarioName(scenario.getScenarioName());
 
-				final List<String> stepRushList =
-						scenarioService.getScenarioStepList(scenario.getScenarioId(), 1)
-						.stream()
-						.map(step -> cutQuizStringOrStay(step.getQuizMstId()))
-						.collect(Collectors.toList());
-				dto.setRushList(stepRushList);
-				final List<String> stepLiteList =
-						scenarioService.getScenarioStepList(scenario.getScenarioId(), 2)
-						.stream()
-						.map(step -> cutQuizStringOrStay(step.getQuizMstId()))
-						.collect(Collectors.toList());
-				dto.setLiteList(stepLiteList);
-				final List<String> stepLibraList =
-						scenarioService.getScenarioStepList(scenario.getScenarioId(), 3)
-						.stream()
-						.map(step -> cutQuizStringOrStay(step.getQuizMstId()))
-						.collect(Collectors.toList());
-				dto.setLibraList(stepLibraList);
-				final List<String> stepFinalList =
-						scenarioService.getScenarioStepList(scenario.getScenarioId(), 4)
-						.stream()
-						.map(step -> cutQuizStringOrStay(step.getQuizMstId()))
-						.collect(Collectors.toList());
-				dto.setFinalList(stepFinalList);
+				dto.setRushList(createQuizTextList(scenarioId, 1));
+
+				dto.setLiteList(createQuizTextList(scenarioId, 2));
+
+				dto.setLibraList(createQuizTextList(scenarioId, 3));
+
+				dto.setFinalList(createQuizTextList(scenarioId, 4));
 				return dto;
 			})
 			.forEach(scenarioList::add);
+
+		final List<Integer> scenarioIdList = scenarioEntityList
+				.stream()
+				.map(ScenarioEntity::getScenarioId)
+				.collect(Collectors.toList());
 
 		final List<RushResponseDto> rushList = quizService.getQuizList(1)
 			.stream()
@@ -116,6 +106,7 @@ public class DataViewController {
 			})
 			.collect(Collectors.toList());
 
+		mav.addObject("scenarioIdList", scenarioIdList);
 		mav.addObject("scenarioList", scenarioList);
 		mav.addObject("rushQuizList", rushList);
 		mav.addObject("liteQuizList", liteList);
@@ -124,6 +115,27 @@ public class DataViewController {
 		return mav;
 	}
 
+	/**
+	 * 問題文のリストを作成
+	 *
+	 * @param scenarioId
+	 * @param categoryId
+	 * @return
+	 */
+	private List<String> createQuizTextList(final int scenarioId, final int categoryId) {
+		return scenarioService.getScenarioStepList(scenarioId, categoryId)
+		.stream()
+		.map(step -> cutQuizStringOrStay(step.getQuizMstId()))
+		.collect(Collectors.toList());
+	}
+
+	/**
+	 * クイズの問題文を取得し、20文字を超える場合は超えた分を"..."に置き換える
+	 *
+	 * @param quizMstId
+	 * @return
+	 */
+	@NonNull
 	private String cutQuizStringOrStay(final int quizMstId) {
 		final String text = quizService.getQuizMst(quizMstId).getQuizText();
 		if (text.length() > 20) {
@@ -133,6 +145,13 @@ public class DataViewController {
 		return text;
 	}
 
+	/**
+	 * 選択肢リストを正答順序で並び替え、"→"で連結する
+	 *
+	 * @param choiceList
+	 * @return
+	 */
+	@NonNull
 	private String generateAnswerOrderStr(final List<ChoiceEntity> choiceList) {
 		final List<String> ch = choiceList.stream()
 		.sorted((c1, c2) -> c1.getAnswerOrder().compareTo(c2.getAnswerOrder()))
@@ -142,6 +161,13 @@ public class DataViewController {
 		return String.join(" → ", ch);
 	}
 
+	/**
+	 * 与えられたChoiceリストから選択肢テキストのリストを作成し、要素数がcount に満たない場合は"-"で埋める
+	 *
+	 * @param choices
+	 * @param count
+	 * @return
+	 */
 	private List<String> createChoiceList(final List<ChoiceEntity> choices, final int count) {
 		final List<String> choiceList = choices
 				.stream()

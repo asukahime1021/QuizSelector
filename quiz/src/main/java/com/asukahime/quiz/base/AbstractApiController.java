@@ -9,15 +9,13 @@ import org.springframework.validation.ObjectError;
 
 public abstract class AbstractApiController<D extends AbstractResponseDto, F extends AbstractRequestForm> {
 
-	private static final String SUCCESS = "000";
-
 	abstract protected D mainProcess(@NonNull F form) throws ApplicationException;
 
 	protected CommonResponseDto<D> process(@NonNull F form, @NonNull BindingResult br) {
 		final var response = new CommonResponseDto<D>();
 
 		if (br.hasErrors()) {
-			response.setCode(HttpStatus.BAD_REQUEST.value());
+			response.setCode(String.valueOf(HttpStatus.BAD_REQUEST.value()));
 
 			final var validationResults = new ArrayList<ValidationObject>();
 			response.setValidationResults(validationResults);
@@ -39,8 +37,8 @@ public abstract class AbstractApiController<D extends AbstractResponseDto, F ext
 			return response;
 		}
 
-		response.setCode(HttpStatus.OK.value());
-		response.setErrorCode(SUCCESS);
+		response.setCode(String.valueOf(HttpStatus.OK.value()));
+		response.setErrorCode(Constant.SUCCESS);
 
 		return response;
 	}

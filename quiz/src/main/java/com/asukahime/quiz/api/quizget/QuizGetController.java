@@ -59,8 +59,11 @@ public class QuizGetController extends AbstractApiController<QuizGetDto, QuizGet
 
 	@Override
 	protected QuizGetDto mainProcess(@NonNull final QuizGetForm form) throws ApplicationException {
+		if (form.getScenarioId() == null) {
+			return createQuizGetDto(form.getQuizCategoryId(), form.isOnlyCategory());
+		}
 
-		return createQuizGetDto(form.getQuizCategoryId(), form.isOnlyCategory());
+		return new QuizGetDto();
 	}
 
 	/**

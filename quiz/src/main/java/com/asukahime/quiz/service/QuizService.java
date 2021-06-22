@@ -72,6 +72,15 @@ public class QuizService extends AbstractService {
 		return quizCategoryService.insertUpdate(entity);
 	}
 
+	/**
+	 * クイズカテゴリを返却
+	 * @param categoryId
+	 * @return
+	 */
+	public QuizCategoryEntity getQuizCategory(@NonNull final Integer categoryId) {
+		return quizCategoryService.getQuizCategoryById(categoryId);
+	}
+
 // ------------------------------
 // クイズマスタ
 // ------------------------------

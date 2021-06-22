@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import com.asukahime.quiz.base.AbstractService;
@@ -145,5 +146,14 @@ public class ScenarioService extends AbstractService {
 		}
 
 		return errors;
+	}
+
+	/**
+	 * scenarioIdに紐づくScenarioStepEntity を返却
+	 * @param scenarioId
+	 * @return
+	 */
+	public List<ScenarioStepEntity> getScenarioStepList(@NonNull final Integer scenarioId) {
+		return scenarioStepRepository.findByScenarioId(scenarioId);
 	}
 }

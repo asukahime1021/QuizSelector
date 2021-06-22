@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface ScenarioStepRepository extends JpaRepository<ScenarioStepEntity, Integer> {
 
 	public List<ScenarioStepEntity> findByScenarioIdAndQuizCategoryId(int scenarioId, int quizCategoryId);
+
+	public List<ScenarioStepEntity> findByScenarioId(int scenarioId);
 }

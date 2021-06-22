@@ -20,7 +20,7 @@ public class GenreMstService {
 	}
 
 	public GenreMstEntity getGenreMst(final int genreId) {
-		return genreMstRepository.findById(genreId).get();
+		return genreMstRepository.findByGenreId(genreId);
 	}
 
 	public Integer getNextId() {

@@ -12,7 +12,7 @@ public class CommonResponseDto<D extends AbstractResponseDto> implements Seriali
 
 	private static final long serialVersionUID = 1L;
 
-	private Integer code;
+	private String code;
 
 	private String errorCode;
 

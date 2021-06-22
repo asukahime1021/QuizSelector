@@ -23,9 +23,9 @@ public class QuizMstEntity extends AbstractEntity {
 	@Column(name = "quiz_text")
 	private String quizText;
 
-	@Column(name = "choice_count", columnDefinition = "0")
+	@Column(name = "choice_count")
 	private int choiceCount;
 
-	@Column(name = "genreId", columnDefinition = "0")
+	@Column(name = "genreId")
 	private int genreId;
 }
