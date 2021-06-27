@@ -14,14 +14,16 @@ type PresenterProps = {
 
 const QuizCategoryAnchorPresenter: React.FC<PresenterProps> = ({text, onClick}) => (
     <p>
-        <a onClick={onClick}>{text}</a>
+        <label onClick={onClick}>{text}</label>
     </p>
 )
 
 const QuizCategoryAnchorContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, categoryId, ...props}) => {
-    const currentQuizContext = useAppContext().currentQuizContext
+    console.log("categoryAnchor categoryId " + categoryId)
+    const currentQuizCategory = useAppContext().currentQuizCategory
     const onClickAnchor = () => {
-        currentQuizContext.setCategoryId(() => categoryId)
+        console.log("category anchor clicked " + categoryId)
+        currentQuizCategory.setCurrentQuizCategoryId(categoryId)
     }
     return presenter({onClick: onClickAnchor, ...props})
 }

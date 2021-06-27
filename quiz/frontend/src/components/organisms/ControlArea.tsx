@@ -7,21 +7,28 @@ import Grid from '@material-ui/core/Grid';
 import TimerBgmControlArea from './TimerBgmControlArea';
 import axios from 'axios';
 import QuizCategoryAnchor from '../atoms/QuizCategoryAnchor';
-import { CommonApiResponse, QuizGetCategory, QuizCategory, QuizMst, GenreMst, Choice, Scenario } from '../objects/interfaces';
+import { QuizMst, ContextQuizMst } from '../objects/interfaces';
 import {useAppContext} from '../atoms/Context'
 import AnswerArea from './AnswerArea';
 
 type ComponentProps = {}
 
+type Category = {
+    id: number,
+    text: string
+}
+
 type PresenterProps = {
-    categories: QuizCategory[]
+    categories: Category[]
 }
 
 // TODO: onClick
-const QuizCategoryAreaCall = (categories: QuizCategory[]) => {
-    const nodes = categories.map((category, index) => {
+const QuizCategoryAreaCall = (categories: Category[]) => {
+    console.log("QuizCategoryAreaCall " + categories)
+    const newCategories = categories
+    const nodes = newCategories.map((category, index) => {
         return (
-            <QuizCategoryAnchor key={index} categoryId={category.categoryId} text={category.categoryText}/>
+            <QuizCategoryAnchor key={index} categoryId={category.id} text={category.text}/>
         )
     })
 
@@ -69,13 +76,21 @@ const QuizCategoryArea = styled.div`
 `
 
 const ControlAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = (props) => {
-    const [categoryList, setCategoryList] = React.useState<QuizCategory[]>([{categoryId: 0, categoryText: "", quizList: []}])
-    const {quizContext} = useAppContext()
+    console.log("ControlArea Container")
+    const [categoryList, setCategoryList] = React.useState<Category[]>([{id: 0, text: ""}])
+    const {currentQuizContext} = useAppContext()
     React.useEffect(() => {
         console.log("control gets quiz data")
-        setCategoryList(() => quizContext.response!.categoryList)    
-    },[quizContext])
-    console.log("control rendering");
+
+        const newCategoryList: Category[] = new Array();
+        const setCurrentQuizCategoryId = (value: ContextQuizMst, key: number) => {
+            console.log("set categoryList categoryId " + key + ", categoryText " + value.categoryText)
+            newCategoryList.push({id: key, text: value.categoryText})
+        }
+        currentQuizContext.categoryCurrentMap.forEach(setCurrentQuizCategoryId)
+        setCategoryList(newCategoryList)
+    },[currentQuizContext.initialized])
+
     return props.presenter({categories: categoryList, ...props})
 }
 

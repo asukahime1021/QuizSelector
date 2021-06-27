@@ -46,17 +46,47 @@ interface Choice {
     answerNum: number
 }
 
+interface ContextQuizMst {
+    quizMstList: QuizMst[],
+    categoryText: string
+}
+
 interface CurrentQuizContext {
-    categoryCurrentMap: Map<number, QuizMst[]>
-    setCategoryCurrentMap: Dispatch<SetStateAction<Map<number, QuizMst[]>>>
+    initialized: boolean
+    categoryCurrentMap: Map<number, ContextQuizMst>
+    setCategoryCurrentMap: Dispatch<SetStateAction<Map<number, ContextQuizMst>>>
 }
 
-interface AnswerStateContext {
-    answerCurrentMap: Map<number, number>
-
+interface CurrentQuizCategory {
+    currentQuizCategoryId: number,
+    setCurrentQuizCategoryId: Dispatch<SetStateAction<number>>
 }
 
-interface AnswerState {
-    
+interface CurrentQuizProgress {
+    currentQuizProgressMap: Map<number, CurrentQuizProgressDetail>
+    setCurrentQuizProgressMap: Dispatch<SetStateAction<Map<number, CurrentQuizProgressDetail>>>
 }
-export type { CommonApiResponse, QuizGetCategory, QuizCategory, GenreMst, QuizMst, Choice, Scenario, CurrentQuizContext};
+
+interface CurrentQuizProgressDetail {
+    // CurrentQuizContext.categoryCurrentMap.quizMstList のカテゴリごとの現在のインデックス
+    quizMstIndex: number,
+    // そこまでの正答数
+    correctedNum: number,
+    // 終わったジャンルリスト（スポット用）
+    finishedGenreList?: number[],
+    // 選択済み選択肢（ライブラ、ファイナル）
+    selectedOrder?: number[],
+}
+
+export type { CommonApiResponse,
+     QuizGetCategory,
+     QuizCategory,
+     GenreMst,
+     QuizMst,
+     Choice,
+     Scenario,
+     CurrentQuizContext,
+     CurrentQuizCategory,
+     ContextQuizMst,
+     CurrentQuizProgress,
+     CurrentQuizProgressDetail};

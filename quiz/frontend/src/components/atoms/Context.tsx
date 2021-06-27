@@ -1,13 +1,14 @@
 import React, { useContext, useState } from 'react';
 import { TimerContext } from '../objects/TimerContext'
 import axios from 'axios'
-import { CommonApiResponse, QuizGetCategory, QuizCategory, QuizMst, GenreMst, Choice, Scenario, CurrentQuizContext } from '../objects/interfaces';
+import { CommonApiResponse, Scenario, CurrentQuizContext, CurrentQuizCategory, ContextQuizMst, CurrentQuizProgress, CurrentQuizProgressDetail } from '../objects/interfaces';
 
 // Context で利用する変数をオブジェクトごとに定義
 export type ContextProps = {
     timerContext: TimerContext
-    quizContext: CommonApiResponse<Scenario>
-    currentQuizContext: Map<number, QuizMst[]>
+    currentQuizCategory: CurrentQuizCategory
+    currentQuizContext: CurrentQuizContext
+    currentQuizProgress: CurrentQuizProgress
 }
 
 const useAppContext = () => useContext<ContextProps>(Context)
@@ -23,38 +24,25 @@ const Context = React.createContext<ContextProps>({
         timerDispFlg: false,
         setTimerDispFlg: () => {},
     },
-    quizContext: {
-        code: "000",
-        errorCode: "000",
-        message: "sample",
-        validationResults: [],
-        response: {
-            categoryList: [{
-                categoryId: 0,
-                categoryText: "DUMMY_QUIZ_CATEGORY",
-                quizList: [{
-                    quizId: 0,
-                    quizCategoryId: 0,
-                    quizText: "DUMMY_QUIZ",
-                    choiceCount: 0,
-                    choiceList: [{
-                        choiceId: 0,
-                        quizMstId: 0,
-                        quizCategoryId: 0,
-                        choiceText: "DUMMY_CHOICE",
-                        answerFlg: false,
-                        answerNum: 0,
-                    }],
-                }]    
-            }]    
-        }
+    currentQuizCategory: {
+        currentQuizCategoryId: 0,
+        setCurrentQuizCategoryId: () => {}
     },
-    currentQuizContext:new Map([
-        [0, []]
-    ])
+    currentQuizContext:{
+        initialized: true,
+        categoryCurrentMap: new Map([
+            [0, { categoryText: "", quizMstList: []}]
+        ]),
+        setCategoryCurrentMap: () => {}
+    },
+    currentQuizProgress: {
+        currentQuizProgressMap: new Map(),
+        setCurrentQuizProgressMap: () => {}
+    }
 })
 
 const ContextProvider: React.FC = ({children}) => {
+    console.log("Context")
     // APIコール
     // [] をセットすることで初回のみ取得
     const [apiResult, setApiResult] = React.useState<CommonApiResponse<Scenario> | null>(null)
@@ -66,7 +54,6 @@ const ContextProvider: React.FC = ({children}) => {
             .then(response => {
                 const result: CommonApiResponse<Scenario> = response.data;
                 setApiResult(() => result);
-                console.log("successed ScenarioGet");
             })
             .catch(error => console.log(error))
         }
@@ -91,20 +78,40 @@ const ContextProvider: React.FC = ({children}) => {
         setTimerDispFlg: setTimerDispFlg
     }
 
-    const currentQuizContext: Map<number, QuizMst[]> = useAppContext().currentQuizContext
+    const [categoryCurrentMap, setCategoryCurrentMap] = useState(useAppContext().currentQuizContext.categoryCurrentMap)
+    const [initialized, setInitialized] = useState(false);
+    const currentQuizContext: CurrentQuizContext = {
+        initialized: initialized,
+        categoryCurrentMap: categoryCurrentMap,
+        setCategoryCurrentMap: setCategoryCurrentMap
+    }
 
-    const quizContextDefault = useAppContext().quizContext
-    const quizContext: CommonApiResponse<Scenario> = apiResult === null || apiResult.code !== "200" || apiResult.response === null
-        ? quizContextDefault
-        : apiResult
+    const [newMap] = React.useState(new Map<number, ContextQuizMst>());
+    if (!(apiResult === null || apiResult.code !== "200" || apiResult.response === null) && !initialized) {
+        console.log("set quizContext")
+        apiResult.response?.categoryList.map(category => {
+            newMap.set(category.categoryId, { categoryText: category.categoryText, quizMstList: category.quizList})
+            console.log("set category Id : " + category.categoryId)
+        })
+        currentQuizContext.setCategoryCurrentMap(() => newMap)
+        setInitialized(true)
+    }
     
-    const [newMap, setNewMap] = React.useState(new Map<number, QuizMst[]>());
-    quizContext.response?.categoryList.map(category => {
-        newMap.set(category.categoryId, category.quizList)
-    })
-    
+    const [currentQuizCategoryId, setCurrentQuizCategoryId] = useState(0)
+    const currentQuizCategory: CurrentQuizCategory = {
+        currentQuizCategoryId: currentQuizCategoryId,
+        setCurrentQuizCategoryId: setCurrentQuizCategoryId
+    }
+
+    const [currentQuizProgressMap, setCurrentQuizProgressMap] = useState(new Map())
+    const currentQuizProgress: CurrentQuizProgress = {
+        currentQuizProgressMap: currentQuizProgressMap,
+        setCurrentQuizProgressMap: setCurrentQuizProgressMap
+    }
+
+    console.log(currentQuizContext.categoryCurrentMap)
     return (
-        <Context.Provider value={{timerContext, quizContext, currentQuizContext}}>
+        <Context.Provider value={{timerContext, currentQuizCategory, currentQuizContext, currentQuizProgress}}>
             {children}
         </Context.Provider>
     )
