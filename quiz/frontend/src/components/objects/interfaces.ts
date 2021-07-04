@@ -42,8 +42,11 @@ interface Choice {
     quizMstId: number,
     quizCategoryId: number,
     choiceText: string,
-    answerFlg: boolean,
-    answerNum: number
+    genreId: string,
+    genreText: string,
+    picture: boolean,
+    answer: boolean,
+    order: number
 }
 
 interface ContextQuizMst {

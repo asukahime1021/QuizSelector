@@ -24,7 +24,6 @@ type PresenterProps = {
 
 // TODO: onClick
 const QuizCategoryAreaCall = (categories: Category[]) => {
-    console.log("QuizCategoryAreaCall " + categories)
     const newCategories = categories
     const nodes = newCategories.map((category, index) => {
         return (
@@ -84,7 +83,6 @@ const ControlAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterPro
 
         const newCategoryList: Category[] = new Array();
         const setCurrentQuizCategoryId = (value: ContextQuizMst, key: number) => {
-            console.log("set categoryList categoryId " + key + ", categoryText " + value.categoryText)
             newCategoryList.push({id: key, text: value.categoryText})
         }
         currentQuizContext.categoryCurrentMap.forEach(setCurrentQuizCategoryId)

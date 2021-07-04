@@ -19,10 +19,9 @@ const QuizCategoryAnchorPresenter: React.FC<PresenterProps> = ({text, onClick}) 
 )
 
 const QuizCategoryAnchorContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, categoryId, ...props}) => {
-    console.log("categoryAnchor categoryId " + categoryId)
     const currentQuizCategory = useAppContext().currentQuizCategory
+
     const onClickAnchor = () => {
-        console.log("category anchor clicked " + categoryId)
         currentQuizCategory.setCurrentQuizCategoryId(categoryId)
     }
     return presenter({onClick: onClickAnchor, ...props})

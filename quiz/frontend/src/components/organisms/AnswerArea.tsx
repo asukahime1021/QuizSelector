@@ -15,7 +15,6 @@ const AnswerAreaPresenter: React.FC<PresenterProps> = ({children}) => (
 )
 
 const AnswerAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, ...props}) => {
-    console.log("AnswerArea Container")
     const {currentQuizCategory} = useAppContext();
     const [child, setChild] = React.useState<React.FC<{}>>(() => <div></div>);
     const [initialized, setInitialized] = React.useState(false);
@@ -27,14 +26,7 @@ const AnswerAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterProp
     }
 
     useEffect(() => {
-        console.log("changed categoryId")
-        switch(currentQuizCategory.currentQuizCategoryId) {
-            case 1: setChild(() => <div style={{backgroundColor: "#F00", width: "100%", height: "24vh"}}></div>);break;
-            case 2: setChild(() => <div style={{backgroundColor: "#0FF", width: "100%", height: "24vh"}}></div>);break;
-            case 3: setChild(() => <div style={{backgroundColor: "#F0F", width: "100%", height: "24vh"}}></div>);break;
-            case 4: setChild(() => <div style={{backgroundColor: "#FF0", width: "100%", height: "24vh"}}></div>);break;
-            default: setChild(DefaultPanel);
-        }    
+        setChild(() => <EachAnswerPanerl categoryId = {currentQuizCategory.currentQuizCategoryId} />)
     }, [currentQuizCategory.currentQuizCategoryId])
     
     return presenter({children: child, ...props})
