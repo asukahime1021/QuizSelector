@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 
-export type TimerContext = {
+export type CurrentTimer = {
     time: number
     setTime:  Dispatch<SetStateAction<number>>
     timerFlg: boolean

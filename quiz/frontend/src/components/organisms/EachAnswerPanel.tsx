@@ -1,8 +1,12 @@
 import React from 'react'
-import { classNames, container, ContainerProps } from '../component'
-import PrimaryButton from '../atoms/PrimaryButton'
-import { useAppContext } from '../atoms/Context'
-import { CurrentQuizProgressDetail, QuizMst, Choice } from '../objects/interfaces'
+import { container, ContainerProps } from '../component'
+import { useCurrentQuizContext, useCurrentQuizProgressContext, useQuizResultContext } from '../atoms/Context'
+import { CurrentQuizProgressDetail, QuizMst } from '../objects/interfaces'
+import styled from 'styled-components'
+import SelectRush from './SelectRush'
+import Library from './Library'
+import Final from './Final'
+import SpotLite from './SpotLite'
 
 type ComponentProps = {
     categoryId: number
@@ -10,60 +14,68 @@ type ComponentProps = {
 type PresenterProps = {
     categoryId: number
     choiceList: number[]
+    genreList?: string[]
     onClickAnswer: (arg: number) => void
     progressString: string
+    finished: boolean
+    onClickNext: () => void
+    onClickPrev: () => void
+    onClickReset: () => void
+    // スポット用
+    onClickGenre: (arg: number) => void
+    onClickBackToGenre: () => void
+}
+interface QuizId {
+    quizId: number
 }
 
-const EachAnswerPanelPresenter: React.FC<PresenterProps> = ({choiceList, onClickAnswer, categoryId, progressString, ...props}) => (
-    <div>
+const EachAnswerPanelPresenter: React.FC<PresenterProps> = ({
+    choiceList,
+    onClickAnswer,
+    categoryId,
+    progressString,
+    finished,
+    onClickNext,
+    onClickPrev,
+    onClickReset,
+    genreList,
+    onClickGenre,
+    onClickBackToGenre}) => (
+
+    <EachAnswerPanelDiv>
         {
-            choiceList.map((value, index) => (
-                <PrimaryButton key={index} onClick={() => onClickAnswer(value)}>{value.toString()}</PrimaryButton>
-            ))
+            categoryId === 1
+            ? <SelectRush choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} finished={finished} onClickNext={onClickNext} onClickPrev={onClickPrev} onClickReset={onClickReset}/>
+            : categoryId === 2
+            ? <SpotLite choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} onClickBackToGenre={onClickBackToGenre} genreList={genreList} onClickGenre={onClickGenre}/>
+            : categoryId === 3
+            ? <Library choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} finished={finished} onClickNext={onClickNext} />
+            : categoryId === 4
+            ? <Final choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} finished={finished} onClickNext={onClickNext} />
+            : <span></span>
         }
-        <p></p>
-        <label>
-        {
-            categoryId === 3 || categoryId === 4
-            ?
-                "現在の選択順序："
-            :
-                categoryId === 2
-                ?
-                    "現在のジャンル："
-        　　    :
-                    categoryId === 1
-                        ?
-                            "現在の進行状況："
-                        :
-                            ""
-        }
-        {progressString}
-        {
-            categoryId === 3
-            ? 
-            <p><PrimaryButton>決定</PrimaryButton></p>
-            :
-            <span></span>
-        }
-        </label>
-        <p>
-            <PrimaryButton>次へ</PrimaryButton>
-        </p>
-    </div>
+    </EachAnswerPanelDiv>
 )
 
+const EachAnswerPanelDiv = styled.div`
+    margin-top: 2vh;
+`
+
 const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, categoryId, ...props}) => {
-    const {currentQuizContext, currentQuizProgress} = useAppContext()
+    const currentQuizContext = useCurrentQuizContext().currentQuizContext
+    const currentQuizProgress = useCurrentQuizProgressContext().currentQuizProgress
+    const quizResult = useQuizResultContext().quizResult
     const tmpQuizProgressMap = new Map(currentQuizProgress.currentQuizProgressMap)
 
     const choiceCount = React.useRef(0);
     const answerNum = React.useRef(0);
     const answerOrder = React.useRef<number[]>([]);
     const choiceOrder = React.useRef<number[]>([]);
+    const [genreList, setGenreList] = React.useState<string[]>([])
     const [progressString, setProgressString] = React.useState("");
-    const [quizId, setQuizId] = React.useState(0)
+    const [quizId, setQuizId] = React.useState<QuizId>({quizId:0})
     const [choiceList, setChoiceList] = React.useState<number[]>([])
+    const [finished, setFinished] = React.useState(true)
 
     if (!tmpQuizProgressMap.has(categoryId)) {
         tmpQuizProgressMap.set(categoryId, { quizMstIndex: 0, correctedNum: 0})
@@ -74,8 +86,33 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
     // クイズID変更時
     // 選択肢を作成
     // 選択順序を初期化
+    // 正答順序、正答番号を変更
     const currentMap = currentQuizContext.categoryCurrentMap.get(categoryId)
     React.useEffect(() => {
+        if (!currentMap) {
+            return
+        }
+
+        const quizMstList = currentMap.quizMstList
+        const newQuizMst: QuizMst = quizMstList[currentQuizProgressDetail.quizMstIndex]
+        if (!newQuizMst) {
+            return
+        }
+
+        if (categoryId === 2) {
+            if (quizId.quizId === -1) {
+                const newGenreList = currentQuizProgressDetail.genreList!!
+                setGenreList(newGenreList)
+            }
+        }
+    
+        choiceCount.current = newQuizMst.choiceCount
+
+        const compareChoice = (arg1: number[], arg2: number[]) => arg1[1] - arg2[1]
+        answerOrder.current = newQuizMst.choiceList.map((value, index) => [index, value.order]).sort(compareChoice).map(pair => pair[0])
+        choiceOrder.current = []
+        answerNum.current = newQuizMst.choiceList.findIndex(choice => choice.answer)
+    
         const newChoiceList: number[] = []
         for (let i = 0; i < choiceCount.current; i++) {
             newChoiceList.push(i + 1)
@@ -84,39 +121,46 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
 
         if (categoryId === 3 || categoryId === 4) {
             tmpQuizProgressMap.get(categoryId)!!.selectedOrder = []
+            setProgressString("")
+        }
+
+        if (!currentMap || currentQuizProgressDetail.quizMstIndex + 1 >= currentMap.quizMstList.length) {
+            setFinished(true)
+        } else {
+            setFinished(false)
         }
     }, [quizId])
 
     // カテゴリ選択時
     // カテゴリごとの現在のクイズを取り出し、選択肢を作成
-    // 正答順序、正答番号を変更
     // クイズIDを変更
     React.useEffect(() => {
         if (categoryId !== 0 && currentMap) {
             const quizMstList = currentMap.quizMstList
             const newQuizMst: QuizMst = quizMstList[currentQuizProgressDetail.quizMstIndex]
     
-            choiceCount.current = newQuizMst.choiceCount
-
-            const compareChoice = (arg1: number[], arg2: number[]) => arg1[1] - arg2[1]
-            answerOrder.current = newQuizMst.choiceList.map((value, index) => [index, value.order]).sort(compareChoice).map(pair => pair[0])
-            choiceOrder.current = []
-            answerNum.current = newQuizMst.choiceList.findIndex(choice => choice.answer)
-            setQuizId(newQuizMst.quizId)
+            setQuizId({quizId : newQuizMst.quizId})
             setProgressString("")
 
-            console.log(newQuizMst)
+            console.log("category : " + categoryId + " , index : " + currentQuizProgressDetail.quizMstIndex + ", quizId : " + newQuizMst.quizId)
         }
     }, [categoryId])
 
     // 選択肢押下
     // 押下した選択肢の配列インデックスがわたってくる
-    const checkAnswer: (arg: number) => void = (choiceNum: number) => {
-        const choiceList = currentQuizContext.categoryCurrentMap.get(categoryId)?.quizMstList[currentQuizProgressDetail.quizMstIndex].choiceList
+    const CheckAnswer: (arg: number) => void = (choiceNum: number) => {
+
         const choiceIndex = choiceNum - 1
 
-        if (answerNum) {
+        if (categoryId === 1 || categoryId === 2) {
             if (choiceIndex === answerNum.current) {
+                currentQuizProgressDetail.correctedNum += 1
+                tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
+                currentQuizProgress.setCurrentQuizProgressMap(tmpQuizProgressMap)
+        
+                quizResult.setResult(1)
+                
+                if (categoryId === 1) setProgressString(createProgressString())
                 console.log("MATCH ANSWER")
                 return
             }
@@ -152,6 +196,7 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
                 console.log("match")
             } else {
                 answerOrder.current.unshift(currentAnswer)
+                console.log("unmatch")
             }
             setProgressString(createProgressString())
             console.log(progressString)
@@ -161,18 +206,69 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
         console.log("UNMATCH ANSWER OR ANSWER ORDER")
     }
 
-    // const onClickNext: () => void = () => {
-    //     if (currentMap) {
-    //         currentMap.quizMstList[currentQuizProgressDetail.quizMstIndex].quizId
-    //     }
-    // }
+    const onClickNext: () => void = () => {
+        currentQuizProgressDetail.quizMstIndex += 1
+        tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
+        currentQuizProgress.setCurrentQuizProgressMap(tmpQuizProgressMap)
+        console.log(currentQuizProgressDetail.quizMstIndex)
 
-    const createProgressString: () => string = () => {
+        if (currentMap) {
+            setQuizId({quizId: currentMap.quizMstList[tmpQuizProgressMap.get(categoryId)!!.quizMstIndex].quizId})
+            setProgressString(createProgressString())
+        }
+    }
+
+    const onClickPrev: () => void = () => {
+        if (currentQuizProgressDetail.quizMstIndex > -1) {
+            currentQuizProgressDetail.quizMstIndex -= 1
+            tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
+            currentQuizProgress.setCurrentQuizProgressMap(tmpQuizProgressMap)
+
+            if (currentMap) {
+                setQuizId({quizId: currentMap.quizMstList[tmpQuizProgressMap.get(categoryId)!!.quizMstIndex].quizId})
+            }
+        } 
+    }
+
+    const onClickReset: () => void = () => {
+        currentQuizProgressDetail.quizMstIndex = 0
+        currentQuizProgressDetail.correctedNum = 0
+        tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
+        currentQuizProgress.setCurrentQuizProgressMap(tmpQuizProgressMap)
+        console.log(currentQuizProgressDetail.quizMstIndex)
+
+        if (currentMap) {
+            setQuizId({quizId: currentMap.quizMstList[tmpQuizProgressMap.get(categoryId)!!.quizMstIndex].quizId})
+            setProgressString(createProgressString())
+        }
+    }
+
+    const onClickGenre: (arg: number) => void = (index: number) => {
+        currentQuizProgressDetail.quizMstIndex = index
+        currentQuizProgressDetail.finishedGenreList!!.push(index)
+        tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
+
+        if (currentMap) {
+            setProgressString(createProgressString(genreList[index - 1]))
+            setGenreList([])
+            setQuizId({quizId: currentMap.quizMstList[index].quizId})
+        }
+    }
+
+    const onClickBackToGenre: () => void = () => {
+        currentQuizProgressDetail.quizMstIndex = 0
+        tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
+
+        setQuizId({quizId: -1})
+        setProgressString(createProgressString())
+    }
+
+    const createProgressString: (arg?: string) => string = (str?: string) => {
         switch(categoryId) {
             case 1:
-                return '未選択'
+                return currentQuizProgressDetail.correctedNum.toString()
             case 2:
-                return '未選択'
+                return str ? str : ''
             case 3:
             case 4:
                 return choiceOrder.current.map(n => n + 1).toString()
@@ -181,7 +277,19 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
         }
     }
 
-    return presenter({categoryId, choiceList, onClickAnswer: checkAnswer, progressString: progressString, ...props})
+    return presenter({
+        categoryId,
+        choiceList,
+        genreList: genreList,
+        onClickAnswer: CheckAnswer,
+        progressString: progressString,
+        finished,
+        onClickNext,
+        onClickPrev,
+        onClickReset,
+        onClickGenre,
+        onClickBackToGenre,
+        ...props})
 }
 
 const EachAnswerPanel: React.FC<ComponentProps> = container(

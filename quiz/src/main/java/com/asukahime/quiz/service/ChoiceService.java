@@ -25,7 +25,7 @@ public class ChoiceService {
 	public List<ChoiceEntity> getChoiceListByQuizId(
 			@NonNull final Integer quizId,
 			@NonNull final Integer quizCategoryId) {
-		return choiceRepository.findByQuizIdAndQuizCategoryId(quizId, quizCategoryId);
+		return choiceRepository.findByQuizIdAndQuizCategoryIdAndDelFlg(quizId, quizCategoryId, "0");
 	}
 
 	/**

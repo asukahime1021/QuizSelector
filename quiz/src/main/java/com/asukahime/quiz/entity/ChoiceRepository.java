@@ -10,7 +10,8 @@ import org.springframework.stereotype.Repository;
 public interface ChoiceRepository extends JpaRepository<ChoiceEntity, Integer> {
 
 	@NonNull
-	public List<ChoiceEntity> findByQuizIdAndQuizCategoryId(
+	public List<ChoiceEntity> findByQuizIdAndQuizCategoryIdAndDelFlg(
 			@NonNull final Integer quizId,
-			@NonNull final Integer quizCategoryId);
+			@NonNull final Integer quizCategoryId,
+			@NonNull final String delFlg);
 }

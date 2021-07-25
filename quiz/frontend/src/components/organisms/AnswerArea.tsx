@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { container, ContainerProps } from '../component';
 import PanelDiv from '../atoms/PanelDiv';
-import { useAppContext } from '../atoms/Context'
+import { useCurrentQuizCategoryContext } from '../atoms/Context'
 import EachAnswerPanerl from '../organisms/EachAnswerPanel'
 
 type ComponentProps = {
@@ -15,7 +15,7 @@ const AnswerAreaPresenter: React.FC<PresenterProps> = ({children}) => (
 )
 
 const AnswerAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, ...props}) => {
-    const {currentQuizCategory} = useAppContext();
+    const currentQuizCategory = useCurrentQuizCategoryContext().currentQuizCategory;
     const [child, setChild] = React.useState<React.FC<{}>>(() => <div></div>);
     const [initialized, setInitialized] = React.useState(false);
 

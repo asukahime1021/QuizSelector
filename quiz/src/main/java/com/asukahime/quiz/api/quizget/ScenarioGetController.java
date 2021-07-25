@@ -97,7 +97,6 @@ public class ScenarioGetController extends AbstractApiController<ScenarioGetDto,
 		final QuizDto dto = new QuizDto();
 		dto.setQuizId(quiz.getQuizId());
 		dto.setQuizText(quiz.getQuizText());
-		dto.setChoiceCount(quiz.getChoiceCount());
 		final GenreMstEntity genre = quizService.getGenreMst(quiz.getGenreId());
 		final List<ChoiceEntity> choices = quizService.getChoiceList(quiz.getQuizId(), quiz.getQuizCategoryId());
 		final List<ChoiceDto> choiceDtoList = choices
@@ -109,6 +108,7 @@ public class ScenarioGetController extends AbstractApiController<ScenarioGetDto,
 					choice))
 			.collect(Collectors.toList());
 		dto.setChoiceList(choiceDtoList);
+		dto.setChoiceCount(choiceDtoList.size());
 		return dto;
 	}
 

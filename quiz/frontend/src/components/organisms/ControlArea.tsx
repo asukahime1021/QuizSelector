@@ -5,10 +5,9 @@ import FlexGrowArea from '../atoms/FlexGrowArea';
 import ControlAreaStyled from '../atoms/ControlAreaStyled';
 import Grid from '@material-ui/core/Grid';
 import TimerBgmControlArea from './TimerBgmControlArea';
-import axios from 'axios';
 import QuizCategoryAnchor from '../atoms/QuizCategoryAnchor';
-import { QuizMst, ContextQuizMst } from '../objects/interfaces';
-import {useAppContext} from '../atoms/Context'
+import { ContextQuizMst } from '../objects/interfaces';
+import { useCurrentQuizContext } from '../atoms/Context'
 import AnswerArea from './AnswerArea';
 
 type ComponentProps = {}
@@ -25,6 +24,7 @@ type PresenterProps = {
 // TODO: onClick
 const QuizCategoryAreaCall = (categories: Category[]) => {
     const newCategories = categories
+    console.log("categoryAreaCalled")
     const nodes = newCategories.map((category, index) => {
         return (
             <QuizCategoryAnchor key={index} categoryId={category.id} text={category.text}/>
@@ -67,17 +67,18 @@ const ControlAreaPresenter: React.FC<PresenterProps> = ({categories}) => (
 const QuizCategoryArea = styled.div`
     height: 24vh;
     overflow: scroll;
-    font-family: 'myfont';
-    @font-face {
-        font-family: 'myfont';
-        src: url('../GD-TiVangerionJA-010.otf');
-    }
 `
+// font-family: 'myfont';
+// @font-face {
+//     font-family: 'myfont';
+//     src: url('../GD-TiVangerionJA-010.otf');
+// }
+
 
 const ControlAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = (props) => {
     console.log("ControlArea Container")
     const [categoryList, setCategoryList] = React.useState<Category[]>([{id: 0, text: ""}])
-    const {currentQuizContext} = useAppContext()
+    const {currentQuizContext} = useCurrentQuizContext()
     React.useEffect(() => {
         console.log("control gets quiz data")
 

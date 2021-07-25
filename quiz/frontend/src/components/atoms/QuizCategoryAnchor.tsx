@@ -1,6 +1,6 @@
 import React from 'react'
 import { container, ContainerProps } from '../component'
-import {useAppContext} from '../atoms/Context'
+import { useCurrentQuizCategoryContext} from '../atoms/Context'
 
 type ComponentProps = {
     categoryId: number
@@ -19,7 +19,7 @@ const QuizCategoryAnchorPresenter: React.FC<PresenterProps> = ({text, onClick}) 
 )
 
 const QuizCategoryAnchorContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, categoryId, ...props}) => {
-    const currentQuizCategory = useAppContext().currentQuizCategory
+    const currentQuizCategory = useCurrentQuizCategoryContext().currentQuizCategory
 
     const onClickAnchor = () => {
         currentQuizCategory.setCurrentQuizCategoryId(categoryId)

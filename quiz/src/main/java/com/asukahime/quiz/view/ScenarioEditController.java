@@ -51,6 +51,7 @@ public class ScenarioEditController {
 		if (!errors.isEmpty()) {
 			mav.addObject("errors", errors);
 			mav.addObject("isError", true);
+			return mav;
 		}
 		setQuizMap(mav);
 		mav.addObject("success", true);

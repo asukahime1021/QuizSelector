@@ -23,6 +23,16 @@ public class ScenarioEditForm extends AbstractRequestForm {
 	private String scenarioSR6;
 	private String scenarioSR7;
 	private String scenarioSR8;
+	private String scenarioSR9;
+	private String scenarioSR10;
+	private String scenarioSR11;
+	private String scenarioSR12;
+	private String scenarioSR13;
+	private String scenarioSR14;
+	private String scenarioSR15;
+	private String scenarioSR16;
+	private String scenarioSR17;
+	private String scenarioSR18;
 
 	private String scenarioSL1;
 	private String scenarioSL2;
@@ -52,7 +62,7 @@ public class ScenarioEditForm extends AbstractRequestForm {
 	private String scenarioFI8;
 
 	public List<String> getScenarioSRList() {
-		return List.of(scenarioSR1, scenarioSR2, scenarioSR3, scenarioSR4, scenarioSR5, scenarioSR6, scenarioSR7, scenarioSR8);
+		return List.of(scenarioSR1, scenarioSR2, scenarioSR3, scenarioSR4, scenarioSR5, scenarioSR6, scenarioSR7, scenarioSR8, scenarioSR9, scenarioSR10, scenarioSR11, scenarioSR12, scenarioSR13, scenarioSR14, scenarioSR15, scenarioSR16, scenarioSR17, scenarioSR18);
 	}
 
 	public List<String> getScenarioSLList() {

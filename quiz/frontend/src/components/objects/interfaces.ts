@@ -54,7 +54,7 @@ interface ContextQuizMst {
     categoryText: string
 }
 
-interface CurrentQuizContext {
+interface CurrentQuiz {
     initialized: boolean
     categoryCurrentMap: Map<number, ContextQuizMst>
     setCategoryCurrentMap: Dispatch<SetStateAction<Map<number, ContextQuizMst>>>
@@ -63,6 +63,20 @@ interface CurrentQuizContext {
 interface CurrentQuizCategory {
     currentQuizCategoryId: number,
     setCurrentQuizCategoryId: Dispatch<SetStateAction<number>>
+}
+
+interface CurrentTimer {
+    time: number
+    timerFlg: boolean
+    timerSetFlg: boolean
+    timerDispFlg: boolean
+}
+
+interface SetCurrentTimer {
+    setTime:  Dispatch<SetStateAction<number>>
+    setTimerFlg: Dispatch<SetStateAction<boolean>>
+    setTimerSetFlg: Dispatch<SetStateAction<boolean>>
+    setTimerDispFlg: Dispatch<SetStateAction<boolean>>
 }
 
 interface CurrentQuizProgress {
@@ -75,10 +89,17 @@ interface CurrentQuizProgressDetail {
     quizMstIndex: number,
     // そこまでの正答数
     correctedNum: number,
-    // 終わったジャンルリスト（スポット用）
+    // ジャンルリスト（スポット用）
+    genreList?: string[],
+    // 終わったジャンルインデックスリスト（スポット用）
     finishedGenreList?: number[],
     // 選択済み選択肢（ライブラ、ファイナル）
     selectedOrder?: number[],
+}
+
+interface QuizResult {
+    result: number
+    setResult: Dispatch<SetStateAction<number>>
 }
 
 export type { CommonApiResponse,
@@ -88,8 +109,10 @@ export type { CommonApiResponse,
      QuizMst,
      Choice,
      Scenario,
-     CurrentQuizContext,
+     CurrentQuiz,
      CurrentQuizCategory,
      ContextQuizMst,
      CurrentQuizProgress,
-     CurrentQuizProgressDetail};
+     CurrentQuizProgressDetail,
+     QuizResult,
+     CurrentTimer, SetCurrentTimer};

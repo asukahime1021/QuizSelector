@@ -1,29 +1,43 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import Timer from '../atoms/Timer';
-// import Grid from '@material-ui/core/Grid';
 import { container, ContainerProps } from '../component';
 import styled from 'styled-components';
+import { useCurrentQuizCategoryContext, useCurrentQuizProgressContext, useCurrentQuizContext } from '../atoms/Context';
+import SelectRushQuiz from './SelectRushQuiz';
+import SpotLiteQuiz from './SpotLiteQuiz';
+
+const BG_SELECT: string = "img/01_bg.jpg"
+const BG_SPOT: string = "img/02_bg.jpg"
+const BG_LIBRA: string = "img/03_bg.jpg"
+const BG_FINAL: string = "img/04_bg.jpg"
 
 type ComponentProps = {
     className?: string
 }
 
 type PresenterProps = ComponentProps & {
+    categoryId: number
     background: string
+    sentence: string
+    choiceList: string[]
+    genreList: string[]
 }
 
-const QuizAreaPresenter: React.FC<PresenterProps> = ({background, ...props}) => (
+
+const QuizAreaPresenter: React.FC<PresenterProps> = ({categoryId, background, sentence, choiceList, genreList, ...props}) => (
     <QuizAreaStyled background={background}>
         <TimerArea>
             <Timer />
         </TimerArea>
+        { categoryId === 1 && <SelectRushQuiz sentence={sentence} choiceList={choiceList} />}
+        { categoryId === 2 && <SpotLiteQuiz genreList={genreList} sentence={sentence} choiceList={choiceList} />}
     </QuizAreaStyled>
 )
 
 const TimerArea = styled.div`
     position: absolute;
-    top:75px;
-    right:0px;
+    top:0.5rem;
+    right:0%;
 `
 
 type QuizAreaStyledProps = {
@@ -40,9 +54,38 @@ const QuizAreaStyled = styled.div<QuizAreaStyledProps>`
 `
 
 const QuizAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, ...props}) => {
-    const filePath = "img/select_rush_png.png"
+    console.log("QUIZAREA")
+    const categoryId = useCurrentQuizCategoryContext().currentQuizCategory.currentQuizCategoryId
+    const progressDetail = useCurrentQuizProgressContext().currentQuizProgress.currentQuizProgressMap.get(categoryId)
+    const quizContext = useCurrentQuizContext().currentQuizContext.categoryCurrentMap
 
-    return presenter({background: filePath, ...props})
+    let sentence: string = ""
+    const choiceList: string[] = []
+    const genreList: string[] = []
+    if (progressDetail) {
+        const index = progressDetail.quizMstIndex
+
+        // 問題文
+        const quiz = quizContext.get(categoryId)!!.quizMstList[index]
+        if (quiz!!.quizText.length > 0) sentence = "Q." + quiz!!.quizText
+
+        // 選択肢
+        quiz.choiceList.map(choice => choiceList.push(choice.choiceText))
+    }
+
+    const filePath = useMemo(() => getFilePath(categoryId), [categoryId])
+    
+    return presenter({categoryId, background: filePath, sentence, choiceList, genreList, ...props})
+}
+
+const getFilePath = (categoryId: number) => {
+    switch(categoryId) {
+        case 1: return BG_SELECT;
+        case 2: return BG_SPOT;
+        case 3: return BG_LIBRA;
+        case 4: return BG_FINAL;
+        default: return "";
+    }
 }
 
 const QuizArea: React.FC<ComponentProps> = container<ComponentProps, PresenterProps>(

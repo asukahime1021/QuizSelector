@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ContainerProps, container } from '../component';
 import styled from 'styled-components';
-import { useAppContext } from './Context'
+import { useTimerContext, useSetTimerContext } from './Context'
 
 export type ComponentProps = {
 }
@@ -9,17 +9,15 @@ export type ComponentProps = {
 type PresenterProps = {
     timervisible: string
     time: number
-    tenSrc: string
-    oneSrc: string
+    timerStr: string
 }
 
 const TimerPresenter: React.FC<PresenterProps> = (
-    {time, tenSrc, oneSrc, ...props}
+    {time, timerStr, ...props}
 ) => (
     <div {...props}>
         <div>
-        <img src={tenSrc} alt="ten"/>
-        <img src={oneSrc} alt="one"/>
+            <span>{timerStr}</span>
         </div>
     </div>
 )
@@ -27,24 +25,33 @@ const TimerPresenter: React.FC<PresenterProps> = (
 const TimerStyled = styled(TimerPresenter)`
     div {
         display: ${props => props.timervisible === "true" ? "block" : "none"};
-        width: 150px;
-        height: 62px;
+        width: 19vh;
+        height: 8vh;
+        line-height: 8vh;
+        z-index: 1;
         position: relative;
-        color: black;
-        text-align: center;
-        background-image: url("timer_base.png");
+        background-image: url("00_second.png"), url("00_time.png");
+        background-repeat: no-repeat;
+        background-size: 3vh, cover;
+        background-position: 15vh 4vh, 0 0;
+        font-family: 'timer';
+        font-size: 5vh;
+        color: red;
+        @font-face {
+            font-family: 'timer';
+            src: url('NitalagoRuika-06M.TTF');
+        }
     }
-    img {
-        padding: 3px;
-        max-width: auto;
-        max-height: 90%;
+    span {
+        margin-left: 20px;
     }
 `
 
 
 const TimerContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, ...props}) => {
     /* eslint-disable */
-    const {timerContext} = useAppContext()
+    const timerContext = useTimerContext().timerContext
+    const setTimerContext = useSetTimerContext().setTimerContext
 
     const [localTime, setLocalTime] = useState(timerContext.time)
     const [visible, setVisible] = useState(false)
@@ -71,7 +78,7 @@ const TimerContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> =
 
     useEffect(() => {
         if (timerContext.timerFlg) {
-            timerContext.setTimerSetFlg(false)
+            setTimerContext.setTimerSetFlg(false)
             timeIntervalRef.current = setInterval(tick, 1000) as unknown as number;
             return;
         }
@@ -89,21 +96,20 @@ const TimerContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> =
     }
 
     const timeStr = zeroFill(localTime.toString());
-    const tenSrc = "num" + timeStr.substr(0,1) + ".png";
-    const oneSrc = "num" + timeStr.substr(1,2) + ".png";
 
     return presenter({timervisible: visible ? "true" : "false",
         time: localTime,
-        tenSrc: tenSrc,
-        oneSrc: oneSrc,
+        timerStr: timeStr,
         ...props})
 }
 
 const zeroFill: (arg: string) => string = (arg: string) => {
-    if (arg.length === 1) {
-        return "0" + arg;
+    switch(arg.length) {
+        case 1: return "00" + arg;
+        case 2: return "0" + arg;
+        case 3: return arg;
+        default: return "999";
     }
-    return arg;
 }
 
 const Timer: React.FC<ComponentProps> = container<ComponentProps, PresenterProps>(TimerContainer, TimerStyled)

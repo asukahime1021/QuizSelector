@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import BlockLabel from '../atoms/BlockLabel';
 import Button from '@material-ui/core/Button';
 import { container, ContainerProps } from '../component';
-import { useAppContext } from '../atoms/Context'
+import { useTimerContext, useSetTimerContext } from '../atoms/Context'
 import PanelDiv from '../atoms/PanelDiv';
-import { TimerContext } from '../objects/TimerContext';
+import { CurrentTimer, SetCurrentTimer } from '../objects/interfaces';
 
 type ComponentProps = {}
 type PresenterProps = {
@@ -89,8 +89,10 @@ const StyledButton = styled(Button)`
 
 const TimerSquareContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, ...props}) => {
     // timer
-    const timerContext: TimerContext = useAppContext().timerContext
-    const {timerFlg, setTime, setTimerFlg, setTimerSetFlg, setTimerDispFlg} = timerContext
+    const timerContext: CurrentTimer = useTimerContext().timerContext
+    const setTimerContext: SetCurrentTimer = useSetTimerContext().setTimerContext
+    const {timerFlg} = timerContext
+    const {setTime, setTimerFlg, setTimerSetFlg, setTimerDispFlg} = setTimerContext
 
     /* eslint-disable */
     const onClickStart: () => void = React.useCallback(() => {
