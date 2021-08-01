@@ -1,9 +1,9 @@
 import React from 'react'
+import { useCurrentQuizProgressContext } from '../atoms/Context'
 import PrimaryButton from '../atoms/PrimaryButton'
 import { container, ContainerProps } from '../component'
 
 type ComponentProps = {
-    genreList?: string[]
     choiceList: number[]
     onClickGenre: (arg: number) => void
     onClickAnswer: (arg: number) => void
@@ -39,9 +39,10 @@ const SpotLitePresenter: React.FC<PresenterProps> = ({genreList, choiceList, onC
     </div>
 )
 
-const SpotLiteContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, ...props}) => {
-    const newGenreList: string[] = props.genreList ? props.genreList.map((text, index) => index.toString()) : []
-    return presenter({genreList: newGenreList, ...props})
+const SpotLiteContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, choiceList, ...props}) => {
+    let genreList: string[] | undefined = useCurrentQuizProgressContext().currentQuizProgress.currentQuizProgressMap.get(2)?.genreList
+    if (!genreList || choiceList.length > 0) genreList = []
+    return presenter({genreList: genreList, choiceList, ...props})
 }
 
 const SpotLite: React.FC<ComponentProps> = container<ComponentProps, PresenterProps>(

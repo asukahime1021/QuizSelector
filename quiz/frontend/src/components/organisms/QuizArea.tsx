@@ -21,16 +21,17 @@ type PresenterProps = ComponentProps & {
     sentence: string
     choiceList: string[]
     genreList: string[]
+    selectedGenre: number | undefined
 }
 
 
-const QuizAreaPresenter: React.FC<PresenterProps> = ({categoryId, background, sentence, choiceList, genreList, ...props}) => (
+const QuizAreaPresenter: React.FC<PresenterProps> = ({categoryId, background, sentence, choiceList, genreList, selectedGenre, ...props}) => (
     <QuizAreaStyled background={background}>
         <TimerArea>
             <Timer />
         </TimerArea>
         { categoryId === 1 && <SelectRushQuiz sentence={sentence} choiceList={choiceList} />}
-        { categoryId === 2 && <SpotLiteQuiz genreList={genreList} sentence={sentence} choiceList={choiceList} />}
+        { categoryId === 2 && <SpotLiteQuiz genreList={genreList} sentence={sentence} choiceList={choiceList} selectedGenre={selectedGenre} />}
     </QuizAreaStyled>
 )
 
@@ -61,21 +62,27 @@ const QuizAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>
 
     let sentence: string = ""
     const choiceList: string[] = []
-    const genreList: string[] = []
+    let genreList: string[] = []
+    let selectedGenreIndex: number | undefined;
     if (progressDetail) {
         const index = progressDetail.quizMstIndex
 
         // 問題文
         const quiz = quizContext.get(categoryId)!!.quizMstList[index]
         if (quiz!!.quizText.length > 0) sentence = "Q." + quiz!!.quizText
+        if (categoryId === 2 && quiz.choiceList.length === 0) sentence = 'ジャンル選択'
 
         // 選択肢
         quiz.choiceList.map(choice => choiceList.push(choice.choiceText))
+
+        // ジャンル
+        if (progressDetail.genreList && quiz.choiceList.length === 0) genreList = progressDetail.genreList
+        if (progressDetail.selectedGenreIndex !== undefined) selectedGenreIndex = progressDetail.selectedGenreIndex
     }
 
     const filePath = useMemo(() => getFilePath(categoryId), [categoryId])
     
-    return presenter({categoryId, background: filePath, sentence, choiceList, genreList, ...props})
+    return presenter({categoryId, background: filePath, sentence, choiceList, genreList, selectedGenre: selectedGenreIndex, ...props})
 }
 
 const getFilePath = (categoryId: number) => {

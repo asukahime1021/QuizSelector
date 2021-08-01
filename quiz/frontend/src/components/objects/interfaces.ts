@@ -93,6 +93,8 @@ interface CurrentQuizProgressDetail {
     genreList?: string[],
     // 終わったジャンルインデックスリスト（スポット用）
     finishedGenreList?: number[],
+    // 選択中のジャンル
+    selectedGenreIndex?: number,
     // 選択済み選択肢（ライブラ、ファイナル）
     selectedOrder?: number[],
 }

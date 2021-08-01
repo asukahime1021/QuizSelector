@@ -14,7 +14,7 @@ type PresenterProps = {
 }
 
 const SentenceStyled = styled.div`
-    font-size: 1.5rem;
+    font-size: 3.5vh;
     height: 12vh;
     color: white;
     padding-top: 3vh;
@@ -30,7 +30,7 @@ const SentenceStyled = styled.div`
 
 const ImgSpan = styled.div`
     width: 50%;
-    font-size: 1.5rem;
+    font-size: 3.5vh;
     position: relative;
 `
 

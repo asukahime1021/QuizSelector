@@ -14,7 +14,6 @@ type ComponentProps = {
 type PresenterProps = {
     categoryId: number
     choiceList: number[]
-    genreList?: string[]
     onClickAnswer: (arg: number) => void
     progressString: string
     finished: boolean
@@ -38,7 +37,6 @@ const EachAnswerPanelPresenter: React.FC<PresenterProps> = ({
     onClickNext,
     onClickPrev,
     onClickReset,
-    genreList,
     onClickGenre,
     onClickBackToGenre}) => (
 
@@ -47,7 +45,7 @@ const EachAnswerPanelPresenter: React.FC<PresenterProps> = ({
             categoryId === 1
             ? <SelectRush choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} finished={finished} onClickNext={onClickNext} onClickPrev={onClickPrev} onClickReset={onClickReset}/>
             : categoryId === 2
-            ? <SpotLite choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} onClickBackToGenre={onClickBackToGenre} genreList={genreList} onClickGenre={onClickGenre}/>
+            ? <SpotLite choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} onClickBackToGenre={onClickBackToGenre} onClickGenre={onClickGenre}/>
             : categoryId === 3
             ? <Library choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} finished={finished} onClickNext={onClickNext} />
             : categoryId === 4
@@ -243,10 +241,20 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
         }
     }
 
-    const onClickGenre: (arg: number) => void = (index: number) => {
-        currentQuizProgressDetail.quizMstIndex = index
-        currentQuizProgressDetail.finishedGenreList!!.push(index)
-        tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
+    const onClickGenre: (arg: number) => void = (index : number) => {
+        if (currentQuizProgressDetail.selectedGenreIndex === undefined || currentQuizProgressDetail.selectedGenreIndex !== index - 1) {
+            currentQuizProgressDetail.selectedGenreIndex = index - 1
+            tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
+            currentQuizProgress.setCurrentQuizProgressMap(tmpQuizProgressMap)
+            console.log(currentQuizProgressDetail.selectedGenreIndex)
+            return;
+        } else {
+            currentQuizProgressDetail.quizMstIndex = index
+            currentQuizProgressDetail.finishedGenreList!!.push(index)
+            currentQuizProgressDetail.selectedGenreIndex = undefined
+            tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
+            currentQuizProgress.setCurrentQuizProgressMap(tmpQuizProgressMap)
+        }
 
         if (currentMap) {
             setProgressString(createProgressString(genreList[index - 1]))
@@ -258,6 +266,7 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
     const onClickBackToGenre: () => void = () => {
         currentQuizProgressDetail.quizMstIndex = 0
         tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
+        currentQuizProgress.setCurrentQuizProgressMap(tmpQuizProgressMap)
 
         setQuizId({quizId: -1})
         setProgressString(createProgressString())
@@ -280,7 +289,6 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
     return presenter({
         categoryId,
         choiceList,
-        genreList: genreList,
         onClickAnswer: CheckAnswer,
         progressString: progressString,
         finished,
