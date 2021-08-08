@@ -47,7 +47,7 @@ const EachAnswerPanelPresenter: React.FC<PresenterProps> = ({
             : categoryId === 2
             ? <SpotLite choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} onClickBackToGenre={onClickBackToGenre} onClickGenre={onClickGenre}/>
             : categoryId === 3
-            ? <Library choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} finished={finished} onClickNext={onClickNext} />
+            ? <Library choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} finished={finished} onClickNext={onClickNext} onClickPrev={onClickPrev} />
             : categoryId === 4
             ? <Final choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} finished={finished} onClickNext={onClickNext} />
             : <span></span>
@@ -153,8 +153,7 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
         if (categoryId === 1 || categoryId === 2) {
             if (choiceIndex === answerNum.current) {
                 currentQuizProgressDetail.correctedNum += 1
-                tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
-                currentQuizProgress.setCurrentQuizProgressMap(tmpQuizProgressMap)
+                setProgressDetail(categoryId)
         
                 quizResult.setResult(1)
                 
@@ -177,6 +176,9 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
             }
             console.log(choiceOrder.current)
             setProgressString(createProgressString())
+
+            currentQuizProgressDetail.selectedOrder = choiceOrder.current
+            setProgressDetail(categoryId)
             return
         }
 
@@ -206,8 +208,8 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
 
     const onClickNext: () => void = () => {
         currentQuizProgressDetail.quizMstIndex += 1
-        tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
-        currentQuizProgress.setCurrentQuizProgressMap(tmpQuizProgressMap)
+        currentQuizProgressDetail.selectedOrder = undefined
+        setProgressDetail(categoryId)
         console.log(currentQuizProgressDetail.quizMstIndex)
 
         if (currentMap) {
@@ -219,8 +221,8 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
     const onClickPrev: () => void = () => {
         if (currentQuizProgressDetail.quizMstIndex > -1) {
             currentQuizProgressDetail.quizMstIndex -= 1
-            tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
-            currentQuizProgress.setCurrentQuizProgressMap(tmpQuizProgressMap)
+            currentQuizProgressDetail.selectedOrder = undefined
+            setProgressDetail(categoryId)
 
             if (currentMap) {
                 setQuizId({quizId: currentMap.quizMstList[tmpQuizProgressMap.get(categoryId)!!.quizMstIndex].quizId})
@@ -231,8 +233,7 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
     const onClickReset: () => void = () => {
         currentQuizProgressDetail.quizMstIndex = 0
         currentQuizProgressDetail.correctedNum = 0
-        tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
-        currentQuizProgress.setCurrentQuizProgressMap(tmpQuizProgressMap)
+        setProgressDetail(categoryId)
         console.log(currentQuizProgressDetail.quizMstIndex)
 
         if (currentMap) {
@@ -244,16 +245,14 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
     const onClickGenre: (arg: number) => void = (index : number) => {
         if (currentQuizProgressDetail.selectedGenreIndex === undefined || currentQuizProgressDetail.selectedGenreIndex !== index - 1) {
             currentQuizProgressDetail.selectedGenreIndex = index - 1
-            tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
-            currentQuizProgress.setCurrentQuizProgressMap(tmpQuizProgressMap)
+            setProgressDetail(categoryId)
             console.log(currentQuizProgressDetail.selectedGenreIndex)
             return;
         } else {
             currentQuizProgressDetail.quizMstIndex = index
             currentQuizProgressDetail.finishedGenreList!!.push(index)
             currentQuizProgressDetail.selectedGenreIndex = undefined
-            tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
-            currentQuizProgress.setCurrentQuizProgressMap(tmpQuizProgressMap)
+            setProgressDetail(categoryId)
         }
 
         if (currentMap) {
@@ -265,8 +264,7 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
 
     const onClickBackToGenre: () => void = () => {
         currentQuizProgressDetail.quizMstIndex = 0
-        tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
-        currentQuizProgress.setCurrentQuizProgressMap(tmpQuizProgressMap)
+        setProgressDetail(categoryId)
 
         setQuizId({quizId: -1})
         setProgressString(createProgressString())
@@ -284,6 +282,11 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
             default:
                 return 'カテゴリを選択してください'
         }
+    }
+
+    const setProgressDetail: (arg: number) => void = (categoryId: number) => {
+        tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
+        currentQuizProgress.setCurrentQuizProgressMap(tmpQuizProgressMap)
     }
 
     return presenter({
