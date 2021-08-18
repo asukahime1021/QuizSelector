@@ -171,6 +171,7 @@ const ContextProvider: React.FC = ({children}) => {
             // カテゴリIDをkey に各カテゴリの進捗初期値をセット
             const tmpDetail: CurrentQuizProgressDetail = {
                 quizMstIndex: 0,
+                choicedAnswer: [-1, -1],
                 correctedNum: 0,
                 genreList: category.categoryId === 2 ? genreList : undefined,
                 finishedGenreList: category.categoryId === 2 ? [] : undefined,

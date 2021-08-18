@@ -6,6 +6,7 @@ import { useCurrentQuizCategoryContext, useCurrentQuizProgressContext, useCurren
 import SelectRushQuiz from './SelectRushQuiz';
 import SpotLiteQuiz from './SpotLiteQuiz';
 import LibraryQuiz from './LibraryQuiz';
+import FinalQuiz from './FinalQuiz';
 
 const BG_SELECT: string = "img/01_bg.jpg"
 const BG_SPOT: string = "img/02_bg.jpg"
@@ -25,17 +26,37 @@ type PresenterProps = ComponentProps & {
     selectedGenre: number | undefined
     selectedList: boolean[]
     orderList: number[]
+    answeredList: boolean[]
+    choicedAnswer: [number, number]
+    finishedGenreList: number[]
+    correctWrongFlg: boolean | undefined
+    outside: boolean | undefined
 }
 
 
-const QuizAreaPresenter: React.FC<PresenterProps> = ({categoryId, background, sentence, choiceList, genreList, selectedGenre, selectedList, orderList}) => (
+const QuizAreaPresenter: React.FC<PresenterProps> = ({
+    categoryId,
+    background,
+    sentence,
+    choiceList,
+    genreList,
+    selectedGenre,
+    selectedList,
+    orderList,
+    answeredList,
+    choicedAnswer,
+    finishedGenreList,
+    correctWrongFlg,
+    outside}) => (
+
     <QuizAreaStyled background={background}>
         <TimerArea>
             <Timer />
         </TimerArea>
-        { categoryId === 1 && <SelectRushQuiz sentence={sentence} choiceList={choiceList} />}
-        { categoryId === 2 && <SpotLiteQuiz genreList={genreList} sentence={sentence} choiceList={choiceList} selectedGenre={selectedGenre} />}
-        { categoryId === 3 && <LibraryQuiz sentence={sentence} choiceList={choiceList} selectedList={selectedList} orderList={orderList} />}
+        { categoryId === 1 && <SelectRushQuiz sentence={sentence} choiceList={choiceList} choicedAnswer={choicedAnswer} />}
+        { categoryId === 2 && <SpotLiteQuiz genreList={genreList} sentence={sentence} choiceList={choiceList} selectedGenre={selectedGenre} choicedAnswer={choicedAnswer} finishedGenreList={finishedGenreList} />}
+        { categoryId === 3 && <LibraryQuiz sentence={sentence} choiceList={choiceList} selectedList={selectedList} orderList={orderList} correctWrongFlg={correctWrongFlg} />}
+        { categoryId === 4 && <FinalQuiz sentence={sentence} choiceList={choiceList} selectedList={selectedList} orderList={orderList} answeredList={answeredList} outside={outside} />}
     </QuizAreaStyled>
 )
 
@@ -67,10 +88,19 @@ const QuizAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>
     let sentence: string = ""
     const choiceList: string[] = []
     const genreList: string[] = []
-    const selectedList: boolean[] = [false, false, false, false, false, false]
+    const selectedList: boolean[] = 
+        categoryId === 3
+            ? [false, false, false, false, false, false]
+            : [false, false, false, false, false, false, false, false, false, false, false]
+    const answeredList: boolean[] = [false, false, false, false, false, false, false, false, false, false, false]
     const orderList: number[] = []
+    let choicedAnswerNumber: [number, number] = [-1, -1]
     let selectedGenreIndex: number | undefined;
+    let finishedGenreList: number[] = []
+    let correctWrongFlg: boolean | undefined = undefined
+    let outside: boolean | undefined = undefined
     if (progressDetail) {
+        console.log("next")
         const index = progressDetail.quizMstIndex
 
         // 問題文
@@ -81,17 +111,39 @@ const QuizAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>
         // 選択肢
         quiz.choiceList.map(choice => choiceList.push(choice.choiceText))
 
+        // 選択回答
+        choicedAnswerNumber = progressDetail.choicedAnswer
+
         // ジャンル
         if (progressDetail.genreList && quiz.choiceList.length === 0) progressDetail.genreList.map(genre => genreList.push(genre))
         if (progressDetail.selectedGenreIndex !== undefined) selectedGenreIndex = progressDetail.selectedGenreIndex
+        if (progressDetail.finishedGenreList) finishedGenreList = progressDetail.finishedGenreList
 
-        if (progressDetail.selectedOrder) {
-            console.log(progressDetail.selectedOrder)
+        if (progressDetail.selectedOrder && categoryId === 3) {
             progressDetail.selectedOrder.map(order => {
                 selectedList[order] = true
                 orderList.push(order)
+                return true
             })
-            console.log(selectedList)
+            if (progressDetail.orderResult !== undefined) {
+                correctWrongFlg = progressDetail.orderResult
+            }
+        }
+
+        if (progressDetail.selectedOrder && categoryId === 4) {
+            progressDetail.selectedOrder.map((order, index) => {
+                selectedList[index] = true
+                orderList.push(order)
+                answeredList[order] = true
+                return true
+            })
+            if (progressDetail.orderResult !== undefined) {
+                correctWrongFlg = progressDetail.orderResult
+            }
+            if (progressDetail.outside !== undefined) {
+                outside = progressDetail.outside
+                console.log("outside: " + outside)
+            }
         }
     }
 
@@ -106,6 +158,11 @@ const QuizAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>
         selectedGenre: selectedGenreIndex,
         selectedList,
         orderList,
+        answeredList,
+        choicedAnswer: choicedAnswerNumber,
+        finishedGenreList,
+        correctWrongFlg,
+        outside,
         ...props})
 }
 

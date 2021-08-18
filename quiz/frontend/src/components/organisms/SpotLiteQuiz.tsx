@@ -7,9 +7,18 @@ type ComponentProps = {
     sentence: string
     choiceList: string[]
     selectedGenre: number| undefined
+    choicedAnswer: [number, number]
+    finishedGenreList: number[]
 }
 
-type PresenterProps = ComponentProps
+type PresenterProps = {
+    genreList: string[]
+    sentence: string
+    choiceList: string[]
+    selectedGenre: number| undefined
+    dispImgInfo: [number, string]
+    finishedFlgList: boolean[]
+}
 
 const SentenceStyled = styled.div`
     font-size: 3.5vh;
@@ -25,17 +34,27 @@ const SentenceStyled = styled.div`
     }
 `
 
-const GenreLi = styled.li`
+const GenreLi = styled.li<{finished: boolean}>`
     width: 22%;
     margin: 1vh;
     position: relative;
     display: flex;
     justify-content: center;
+    filter: brightness(${props => props.finished ? 50 : 100}%);
+    z-index: 3;
+`
+const GenreLi2 = styled.li<{finished: boolean}>`
+    width: 22%;
+    margin: 1vh;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    filter: brightness(${props => props.finished ? 50 : 100}%);
 `
 
 const SelectLi = styled.li`
     width: 25%;
-    margin: 1vh;
+    margin: 0 3vh;
     position: relative;
     display: flex;
     justify-content: center;
@@ -64,7 +83,7 @@ const GenreImg = styled.img`
 const LightImg = styled.img`
     position: absolute;
     width: 100%;
-    z-index: 1;
+    z-index: 2;
 `
 
 const SpotLightDiv = styled.div`
@@ -89,7 +108,14 @@ const SpotLiteParent = styled.div`
     padding-bottom: 0.1vh;
 `
 
-const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, choiceList, selectedGenre}) => (
+const CorrectWrongImg = styled.img`
+    display: block;
+    position: absolute;
+    max-width: 100%;
+    z-index: 1;
+`
+
+const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, choiceList, selectedGenre, dispImgInfo, finishedFlgList}) => (
     <SpotLiteParent>
         <SentenceStyled>{sentence}</SentenceStyled>
         {
@@ -101,7 +127,7 @@ const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, c
                         const lightNum = index + 1
                         const lightSrc = "img/02_genrelight0" + lightNum + ".png"
                         return (
-                        <GenreLi key={index}>
+                        <GenreLi key={index} finished={finishedFlgList[index]}>
                             <GenreImg src="img/02_genre.png" />
                             {selectedGenre !== undefined && selectedGenre === index
                             ?
@@ -115,6 +141,7 @@ const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, c
                         </GenreLi>
                         )
                     }
+                    return <span></span>
                 })}
             </ul>
             <ul style={{display: 'flex', justifyContent: 'center', listStyle: 'none', flexWrap: 'wrap', marginLeft: '-3vh'}}>
@@ -123,7 +150,7 @@ const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, c
                         const lightNum = index + 1
                         const lightSrc = "img/02_genrelight0" + lightNum + ".png"
                         return (
-                        <GenreLi key={index}>
+                        <GenreLi2 key={index} finished={finishedFlgList[index]}>
                             <GenreImg src="img/02_genre.png" />
                             {selectedGenre !== undefined && selectedGenre === index
                             ?
@@ -134,9 +161,10 @@ const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, c
                             <GenreP>
                                 <label>{text}</label>
                             </GenreP>
-                        </GenreLi>
+                        </GenreLi2>
                         )
                     }
+                    return <span></span>
                 })}
             </ul>
         </div>
@@ -144,19 +172,28 @@ const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, c
     }
     {
         choiceList.length > 0 ?
-        <div>
+        <div style={{marginTop: "5vh"}}>
             <ul style={{display: 'flex', justifyContent: 'center', listStyle: 'none', flexWrap: 'wrap', marginLeft: '-3vh'}}>
                 {choiceList.map((text, index) => {
                     if (index < 2) {
                         return (
                         <SelectLi key={index}>
+                            {
+                                dispImgInfo[0] === index
+                                ? <CorrectWrongImg src={dispImgInfo[1]}/>
+                                : <span></span>
+                            }
                             <GenreImg src="img/02_select.png" />
                             <GenreP>
-                                <label>{text}</label>
+                                {text.indexOf("png") > 0
+                                ? <img src={text} style={{width: "100%"}}/>
+                                : <label>{text}</label>
+                                }
                             </GenreP>
                         </SelectLi>
                         )
                     }
+                    return <span></span>
                 })}
             </ul>
             <ul style={{display: 'flex', justifyContent: 'center', listStyle: 'none', flexWrap: 'wrap', marginLeft: '-3vh'}}>
@@ -164,13 +201,22 @@ const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, c
                     if (index > 1) {
                         return (
                         <SelectLi key={index}>
+                            {
+                                dispImgInfo[0] === index
+                                ? <CorrectWrongImg src={dispImgInfo[1]}/>
+                                : <span></span>
+                            }
                             <GenreImg src="img/02_select.png" />
                             <GenreP>
-                                <label>{text}</label>
+                                {text.indexOf("png") > 0
+                                ? <img src={text} style={{width: "100%"}}/>
+                                : <label>{text}</label>
+                                }
                             </GenreP>
                         </SelectLi>
                         )
                     }
+                    return <span></span>
                 })}
             </ul>
         </div>
@@ -182,8 +228,28 @@ const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, c
     </SpotLiteParent>
 )
 
-const SpotLiteQuizContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, sentence, genreList, choiceList, selectedGenre, ...props}) => {
-    return presenter({sentence, genreList, choiceList, selectedGenre, ...props})
+const SpotLiteQuizContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({
+    presenter,
+    sentence,
+    genreList,
+    choiceList,
+    selectedGenre,
+    choicedAnswer,
+    finishedGenreList,
+    ...props}) => {
+    
+    let dispImgInfo: [number, string] = [-1, ""]
+    if (choicedAnswer[0] !== -1) {
+        if (choicedAnswer[0] === choicedAnswer[1]) {
+            dispImgInfo = [choicedAnswer[0], "img/02_selectlight0" + (choicedAnswer[1] + 1) + ".png"]
+        } else {
+            dispImgInfo = [choicedAnswer[0], "img/wrong_answer.png"]
+        }
+    }
+
+    const finishedFlgList = [false, false, false, false, false, false, false]
+    finishedGenreList.map(num => finishedFlgList[num - 1] = true)
+    return presenter({sentence, genreList, choiceList, selectedGenre, dispImgInfo, finishedFlgList, ...props})
 }
 
 const SpotLiteQuiz: React.FC<ComponentProps> = container(

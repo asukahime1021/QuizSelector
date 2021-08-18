@@ -87,6 +87,8 @@ interface CurrentQuizProgress {
 interface CurrentQuizProgressDetail {
     // CurrentQuizContext.categoryCurrentMap.quizMstList のカテゴリごとの現在のインデックス
     quizMstIndex: number,
+    // 選んだ選択肢
+    choicedAnswer: [number, number],
     // そこまでの正答数
     correctedNum: number,
     // ジャンルリスト（スポット用）
@@ -97,6 +99,8 @@ interface CurrentQuizProgressDetail {
     selectedGenreIndex?: number,
     // 選択済み選択肢（ライブラ、ファイナル）
     selectedOrder?: number[],
+    orderResult?: boolean
+    outside?: boolean
 }
 
 interface QuizResult {

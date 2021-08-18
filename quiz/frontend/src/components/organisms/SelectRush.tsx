@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import React from 'react'
 import PrimaryButton from '../atoms/PrimaryButton'
 import { container, ContainerProps } from '../component'
 
@@ -44,7 +44,7 @@ const SelectRushPresenter: React.FC<PresenterProps> = ({choiceList, onClickAnswe
 )
 
 const SelectRushContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, ...props}) => {
-    return useMemo(() => presenter(props), [props.choiceList, props.progressString])
+    return presenter(props)
 }
 
 const SelectRush: React.FC<ComponentProps> = container(SelectRushContainer, SelectRushPresenter)

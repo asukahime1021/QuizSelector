@@ -6,11 +6,13 @@ import SRProgress from '../molecules/SRProgress';
 type ComponentProps = {
     sentence: string
     choiceList: string[]
+    choicedAnswer: [number, number]
 }
 
 type PresenterProps = {
     sentence: string
     srChoiceList: SRChoice[]
+    dispImgInfo: [number, string]
 }
 
 const SentenceStyled = styled.div`
@@ -50,6 +52,15 @@ const ImgImg = styled.img`
     width: 100%;
 `
 
+const CorrectWrongImg = styled.img`
+    display: block;
+    position: absolute;
+    top: -3vh;
+    left: -9vh;
+    max-width: 50%;
+    z-index: 1;
+`
+
 const UpperChoices = styled.div`
     display: flex;
     padding-left: 5vh;
@@ -68,7 +79,7 @@ interface SRChoice {
     frame: string
 }
 
-const SelectRushQuizPresenter: React.FC<PresenterProps> = ({sentence, srChoiceList, ...props}) => (
+const SelectRushQuizPresenter: React.FC<PresenterProps> = ({sentence, srChoiceList, dispImgInfo}) => (
     <div style={{position: "relative", height: "100%"}}>
         <SentenceStyled>{sentence}</SentenceStyled>
         <UpperChoices>
@@ -76,11 +87,17 @@ const SelectRushQuizPresenter: React.FC<PresenterProps> = ({sentence, srChoiceLi
             if (index < 2) {
                 return (
                     <ImgSpan key={index}>
+                        {
+                            dispImgInfo[0] === index
+                            ? <CorrectWrongImg src={dispImgInfo[1]}/>
+                            : <span></span>
+                        }
                         <ImgImg src={sr.frame} />
                         <ImgLabel>{sr.text}</ImgLabel>
                     </ImgSpan>    
                 )
             }
+            return <span></span>
         })}
         </UpperChoices>
         <LowerChoices>
@@ -88,11 +105,17 @@ const SelectRushQuizPresenter: React.FC<PresenterProps> = ({sentence, srChoiceLi
             if (index > 1) {
                 return (
                     <ImgSpan key={index}>
+                        {
+                            dispImgInfo[0] === index
+                            ? <CorrectWrongImg src={dispImgInfo[1]}/>
+                            : <span></span>
+                        }
                         <ImgImg src={sr.frame} />
                         <ImgLabel>{sr.text}</ImgLabel>
                     </ImgSpan>    
                 )
             }
+            return <span></span>
         })}
         </LowerChoices>
         <div style={{position: "absolute", bottom: "25vh", paddingLeft: "5vh", paddingRight: "14vh"}}>
@@ -101,7 +124,7 @@ const SelectRushQuizPresenter: React.FC<PresenterProps> = ({sentence, srChoiceLi
     </div>
 )
 
-const SelectRushQuizContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, sentence, choiceList, ...props}) => {
+const SelectRushQuizContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, sentence, choiceList, choicedAnswer, ...props}) => {
     const dispChoiceList: SRChoice[] = choiceList.map((text, index) => {
         const srChoice: SRChoice = {
             text: text,
@@ -110,7 +133,16 @@ const SelectRushQuizContainer: React.FC<ContainerProps<ComponentProps, Presenter
         return srChoice;
     })
 
-    return presenter({sentence: sentence, srChoiceList: dispChoiceList, ...props})
+    let dispImgInfo : [number, string] = [-1, ""]
+    if (choicedAnswer[0] !== -1) {
+        if (choicedAnswer[0] === choicedAnswer[1]) {
+            dispImgInfo = [choicedAnswer[0], "img/correct_answer.png"]
+        } else {
+            dispImgInfo = [choicedAnswer[0], "img/wrong_answer.png"]
+        }
+    }
+
+    return presenter({sentence: sentence, srChoiceList: dispChoiceList, dispImgInfo, ...props})
 }
 
 const SelectRushQuiz: React.FC<ComponentProps> = container(

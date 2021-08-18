@@ -8,27 +8,37 @@ type ComponentProps = {
     progressString: string
     finished: boolean
     onClickNext: () => void
+    onClickPrev: () => void
+    onClickDetermine: () => void
 }
 
 type PresenterProps = ComponentProps
 
-const FinalPresenter: React.FC<PresenterProps> = ({choiceList, onClickAnswer, progressString, finished, onClickNext, ...props}) => (
+const FinalPresenter: React.FC<PresenterProps> = ({choiceList, onClickAnswer, progressString, finished, onClickNext, onClickPrev, onClickDetermine}) => (
     <div>
         {
             choiceList.map((value, index) => (
                 <PrimaryButton key={index} onClick={() => onClickAnswer(value)}>{value.toString()}</PrimaryButton>
             ))
         }
-        <p></p>
+        <p>
         <label>
             現在の選択順序：
             {progressString}
         </label>
+        </p>
+        {choiceList.length > 0
+            ?
+                <span>
+                    <PrimaryButton onClick={onClickPrev}>戻る</PrimaryButton>
+                    <PrimaryButton onClick={onClickDetermine}>決定</PrimaryButton>
+                </span>
+            :
+                <span></span>
+        }
         {!finished
             ?
-                <p>
-                    <PrimaryButton onClick={onClickNext}>次へ</PrimaryButton>
-                </p>
+                <PrimaryButton onClick={onClickNext}>次へ</PrimaryButton>
             :
                 <span></span>
         }

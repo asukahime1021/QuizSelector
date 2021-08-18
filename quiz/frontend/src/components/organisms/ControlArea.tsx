@@ -61,6 +61,12 @@ const ControlAreaPresenter: React.FC<PresenterProps> = ({categories}) => (
                 </Grid>
             </Grid>
         </FlexGrowArea>
+        <audio id="correct_sound" preload="auto">
+            <source src="sound/correct_answer.mp3" type="audio/mp3" />
+        </audio>
+        <audio id="wrong_buzzer" preload="auto">
+            <source src="sound/wrong_buzzer.mp3" type="audio/mp3" />
+        </audio>
     </ControlAreaStyled>
 )
 

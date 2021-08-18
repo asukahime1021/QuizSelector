@@ -7,10 +7,12 @@ type ComponentProps = {
     choiceList: string[]
     selectedList: boolean[]
     orderList: number[]
+    correctWrongFlg?: boolean
 }
 
 type PresenterProps = ComponentProps & {
     pathList: string[]
+    correctWrongImgPath?: string
 }
 
 const WrapperDiv = styled.div`
@@ -60,9 +62,19 @@ const ChoiceInnerDiv = styled.div<{selected: boolean}>`
     transform: translate(-50%, 5%);
 `
 
-const LibraryQuizPresenter: React.FC<PresenterProps> = ({sentence, choiceList, selectedList, orderList, pathList}) => (
+const CorrectWrongImg = styled.img`
+    display: block;
+    position: absolute;
+    top: 20vh;
+    left: 30vh;
+    max-width: 50%;
+    z-index: 1;
+`
+
+const LibraryQuizPresenter: React.FC<PresenterProps> = ({sentence, choiceList, selectedList, orderList, pathList, correctWrongImgPath}) => (
     <WrapperDiv>
         <SentenceStyled>{sentence}</SentenceStyled>
+        <CorrectWrongImg src={correctWrongImgPath} />
         <ChoiceDiv top={31} left={8}><ChoiceInnerDiv selected={false}>{choiceList[0]}</ChoiceInnerDiv></ChoiceDiv>
 
         <ChoiceDiv top={31} left={28}>
@@ -121,15 +133,20 @@ const LibraryQuizPresenter: React.FC<PresenterProps> = ({sentence, choiceList, s
     </WrapperDiv>
 )
 
-const LibraryQuizContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, orderList, ...props}) => {
+const LibraryQuizContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, orderList, correctWrongFlg, ...props}) => {
     const pathList: string[] = []
     orderList.map(order => {
-        console.log("order: " + order)
         if (order !== 0 && order !== 5) {
             pathList.push("img/03_book0" + order + ".png")
         }
+        return true
     })
-    return presenter({orderList, pathList, ...props})
+    let correctWrongPath: string = ""
+    if (correctWrongFlg !== undefined) {
+        correctWrongPath = correctWrongFlg ? "img/correct_answer.png" : "img/wrong_answer.png"
+        console.log("answer : " + correctWrongPath)
+    }
+    return presenter({orderList, pathList, correctWrongImgPath: correctWrongPath, ...props})
 }
 
 const LibraryQuiz: React.FC<ComponentProps> = container<ComponentProps, PresenterProps>(
