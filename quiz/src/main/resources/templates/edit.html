@@ -147,12 +147,12 @@
 				<div id="libraChoice" style="display: none">
 					<label class="block notice">※選択肢1から順に、左から右へ並びます。</label>
 					<label class="block notice">左のドロップダウンで正答順序を選択します</label>
-					<th:block th:each="i : ${#numbers.sequence(1, 5)}">
+					<th:block th:each="i : ${#numbers.sequence(1, 6)}">
 						<div class="eachchoice">
 							<label th:text="'選択肢' + ${i}">選択肢1</label>
 							<select th:name="'libraOrder' + ${i}">
 								<option th:value="'-'"></option>
-								<option th:value="${j}" th:text=${j} th:each="j : ${#numbers.sequence(1, 5)}">1</option>
+								<option th:value="${j}" th:text=${j} th:each="j : ${#numbers.sequence(1, 6)}">1</option>
 							</select>
 							<input th:name="'libraChoice' + ${i}" value="-">
 						</div>

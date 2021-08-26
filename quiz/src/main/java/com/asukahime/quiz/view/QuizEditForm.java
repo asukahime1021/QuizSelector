@@ -46,6 +46,8 @@ public class QuizEditForm extends AbstractRequestForm {
 	private String libraChoice4;
 	private String libraOrder5;
 	private String libraChoice5;
+	private String libraOrder6;
+	private String libraChoice6;
 
 	private String finalOrder1;
 	private String finalChoice1;
@@ -79,11 +81,11 @@ public class QuizEditForm extends AbstractRequestForm {
 	}
 
 	public List<String> getLibraOrderList() {
-		return List.of(libraOrder1, libraOrder2, libraOrder3, libraOrder4, libraOrder5);
+		return List.of(libraOrder1, libraOrder2, libraOrder3, libraOrder4, libraOrder5, libraOrder6);
 	}
 
 	public List<String> getLibraChoiceList() {
-		return List.of(libraChoice1, libraChoice2, libraChoice3, libraChoice4, libraChoice5);
+		return List.of(libraChoice1, libraChoice2, libraChoice3, libraChoice4, libraChoice5, libraChoice6);
 	}
 
 	public List<String> getFinalOrderList() {
