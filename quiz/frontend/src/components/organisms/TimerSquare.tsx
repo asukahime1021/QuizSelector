@@ -16,21 +16,16 @@ type PresenterProps = {
 }
 
 const InputMemo = React.memo(() => {
-    console.log("input")
     return (
         <div style={{margin: "0px 7px"}}>
             <BlockLabel text={"タイマー"}/>
             <StyledInput type="number" id="timerInput"/>
-            <audio id="thinking">
-                <source src="GG.mp3" type="audio/mpeg"/>
-            </audio>
         </div>
     )
 })
 
 type UpperButtonProps = {onClickSet: () => void, onClickStart: () => void}
 const UpperButtonMemo = React.memo<UpperButtonProps>((props) => {
-    console.log("upper")
     return (
         <div>
             <StyledButton onClick={props.onClickSet}>セット</StyledButton>
@@ -41,7 +36,6 @@ const UpperButtonMemo = React.memo<UpperButtonProps>((props) => {
 
 type LowerButtonProps = {onClickHide: () => void, onClickStop: () => void}
 const LowerButtonMemo = React.memo<LowerButtonProps>((props) => {
-    console.log("lower")
     return (
         <div>
             <StyledButton onClick={props.onClickHide}>表示</StyledButton>
@@ -98,17 +92,12 @@ const TimerSquareContainer: React.FC<ContainerProps<ComponentProps, PresenterPro
     const onClickStart: () => void = React.useCallback(() => {
             if (!timerFlg) {
                 setTimerFlg(timerFlg => !timerFlg)
-                const audio = document.getElementById("thinking") as HTMLAudioElement
-                audio.volume = 0.01
-                audio.play()
             }
     },[timerFlg])
 
     const onClickStop: () => void = React.useCallback(() => {
         if (timerFlg) {
             setTimerFlg(timerFlg => !timerFlg)
-            const audio = document.getElementById("thinking") as HTMLAudioElement
-            audio.pause()
         }
     },[timerFlg])
 
@@ -118,13 +107,10 @@ const TimerSquareContainer: React.FC<ContainerProps<ComponentProps, PresenterPro
 
     const onClickSet: () => void = React.useCallback(() => {
         const input: HTMLInputElement = document.getElementById('timerInput') as HTMLInputElement
-        const timerInput = input.value ? Number(input.value) : 0
+        const timerInput = input.value ? Number(input.value) : Number(0)
         setTime(timerInput)
         setTimerFlg(false)
-        setTimerSetFlg(true)
-        const audio = document.getElementById("thinking") as HTMLAudioElement
-        audio.pause()
-        audio.currentTime = 0
+        setTimerSetFlg(timerSetFlg => !timerSetFlg)
     },[])
     /* eslint-enable */
 

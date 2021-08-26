@@ -87,20 +87,37 @@ interface CurrentQuizProgress {
 interface CurrentQuizProgressDetail {
     // CurrentQuizContext.categoryCurrentMap.quizMstList のカテゴリごとの現在のインデックス
     quizMstIndex: number,
+    // 正解表示フラグ
+    showCorrect?: boolean,
     // 選んだ選択肢
     choicedAnswer: [number, number],
     // そこまでの正答数
     correctedNum: number,
+    // 進捗数
+    progressNum: number,
     // ジャンルリスト（スポット用）
     genreList?: string[],
+    // トップ画面フラグ
+    isTop?: boolean,
     // 終わったジャンルインデックスリスト（スポット用）
     finishedGenreList?: number[],
     // 選択中のジャンル
     selectedGenreIndex?: number,
     // 選択済み選択肢（ライブラ、ファイナル）
     selectedOrder?: number[],
+    // 選択順位の正答判定
     orderResult?: boolean
+    // 選択肢がランク外
     outside?: boolean
+    // Finalのクリアフラグ
+    clear?: boolean
+    // 正解ナンバー
+    answerNum?: number
+    // 正解順位
+    answerOrder?: number[]
+    // Final失敗
+    failed?: boolean
+    wrongNum?: number
 }
 
 interface QuizResult {
@@ -108,17 +125,31 @@ interface QuizResult {
     setResult: Dispatch<SetStateAction<number>>
 }
 
-export type { CommonApiResponse,
-     QuizGetCategory,
-     QuizCategory,
-     GenreMst,
-     QuizMst,
-     Choice,
-     Scenario,
-     CurrentQuiz,
-     CurrentQuizCategory,
-     ContextQuizMst,
-     CurrentQuizProgress,
-     CurrentQuizProgressDetail,
-     QuizResult,
-     CurrentTimer, SetCurrentTimer};
+interface Ticket {
+    ticketInfo: TicketInfo
+    setTicketInfo: Dispatch<SetStateAction<TicketInfo>>
+}
+
+interface TicketInfo {
+    ticketNum: number
+    ticketDispFlg: boolean
+}
+
+export type { 
+    CommonApiResponse,
+    QuizGetCategory,
+    QuizCategory,
+    GenreMst,
+    QuizMst,
+    Choice,
+    Scenario,
+    CurrentQuiz,
+    CurrentQuizCategory,
+    ContextQuizMst,
+    CurrentQuizProgress,
+    CurrentQuizProgressDetail,
+    QuizResult,
+    CurrentTimer,
+    SetCurrentTimer,
+    Ticket,
+    TicketInfo};

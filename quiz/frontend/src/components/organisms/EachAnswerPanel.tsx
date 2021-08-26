@@ -25,6 +25,8 @@ type PresenterProps = {
     onClickBackToGenre: () => void
     // ライブラ、Final用
     onClickDetermine: () => void
+    onClickCorrect: () => void
+    isTop: boolean
 }
 interface QuizId {
     quizId: number
@@ -41,16 +43,18 @@ const EachAnswerPanelPresenter: React.FC<PresenterProps> = ({
     onClickReset,
     onClickGenre,
     onClickBackToGenre,
-    onClickDetermine}) => (
+    onClickDetermine,
+    onClickCorrect,
+    isTop}) => (
 
     <EachAnswerPanelDiv>
         {
             categoryId === 1
             ? <SelectRush choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} finished={finished} onClickNext={onClickNext} onClickPrev={onClickPrev} onClickReset={onClickReset}/>
             : categoryId === 2
-            ? <SpotLite choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} onClickBackToGenre={onClickBackToGenre} onClickGenre={onClickGenre}/>
+            ? <SpotLite choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} onClickBackToGenre={onClickBackToGenre} onClickGenre={onClickGenre} onClickCorrect={onClickCorrect} isTop={isTop} />
             : categoryId === 3
-            ? <Library choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} finished={finished} onClickNext={onClickNext} onClickPrev={onClickPrev} onClickDetermine={onClickDetermine}/>
+            ? <Library choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} finished={finished} onClickNext={onClickNext} onClickPrev={onClickPrev} onClickDetermine={onClickDetermine} onClickCorrect={onClickCorrect} />
             : categoryId === 4
             ? <Final choiceList={choiceList} onClickAnswer={onClickAnswer} progressString={progressString} finished={finished} onClickNext={onClickNext} onClickPrev={onClickPrev} onClickDetermine={onClickDetermine}/>
             : <span></span>
@@ -73,6 +77,7 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
     const answerOrder = React.useRef<number[]>([]);
     const choiceOrder = React.useRef<number[]>([]);
     const outsider = React.useRef(0)
+    const isTop = React.useRef(true)
     const [genreList, setGenreList] = React.useState<string[]>([])
     const [progressString, setProgressString] = React.useState("");
     const [quizId, setQuizId] = React.useState<QuizId>({quizId:0})
@@ -84,7 +89,7 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
     const wrongBuzzerMp3 = document.getElementById("wrong_buzzer") as HTMLAudioElement;
 
     if (!tmpQuizProgressMap.has(categoryId)) {
-        tmpQuizProgressMap.set(categoryId, { quizMstIndex: 0, correctedNum: 0, choicedAnswer: [-1, -1]})
+        tmpQuizProgressMap.set(categoryId, { quizMstIndex: 0, correctedNum: 0, progressNum: 1, choicedAnswer: [-1, -1]})
     }
     const currentQuizProgressDetail: CurrentQuizProgressDetail = 
         tmpQuizProgressMap.get(categoryId)!!
@@ -106,6 +111,10 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
         }
 
         if (categoryId === 2) {
+            if (quizId.quizId === -2) {
+                currentQuizProgressDetail.isTop = true
+                isTop.current = true
+            }
             if (quizId.quizId === -1) {
                 const newGenreList = currentQuizProgressDetail.genreList!!
                 setGenreList(newGenreList)
@@ -118,6 +127,8 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
         answerOrder.current = newQuizMst.choiceList.map((value, index) => [index, value.order]).sort(compareChoice).map(pair => pair[0])
         choiceOrder.current = []
         answerNum.current = newQuizMst.choiceList.findIndex(choice => choice.answer)
+        currentQuizProgressDetail.answerNum = answerNum.current
+        currentQuizProgressDetail.answerOrder = answerOrder.current.slice()
     
         const newChoiceList: number[] = []
         for (let i = 0; i < choiceCount.current; i++) {
@@ -139,6 +150,8 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
         } else {
             setFinished(false)
         }
+
+        setProgressDetail(categoryId)
     }, [quizId])
 
     // カテゴリ選択時
@@ -162,15 +175,14 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
 
         if (categoryId === 1 || categoryId === 2) {
             if (choiceIndex === answerNum.current) {
-        
                 quizResult.setResult(1)
-                
-                if (categoryId === 1) setProgressString(createProgressString())
-
-                correctAnswerMp3.play()
+                playSE(correctAnswerMp3)
                 currentQuizProgressDetail.correctedNum += 1
+                currentQuizProgressDetail.progressNum += 1
+
+                if (categoryId === 1) setProgressString(createProgressString())
             } else {
-                wrongBuzzerMp3.play()
+                playSE(wrongBuzzerMp3)
             }
             currentQuizProgressDetail.choicedAnswer = [choiceIndex, answerNum.current]
             setProgressDetail(categoryId)
@@ -201,31 +213,37 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
 
             // 現在の正解インデックスを先頭から取り出し
             const currentAnswer: number = answerOrder.current.shift()!!
-            console.log(outsider + " : " + choiceIndex)
 
             // 選択されたインデックスを比較
             // 誤っている場合は、取り出したインデックスを先頭に戻す
             if (currentAnswer === choiceIndex) {
                 choiceOrder.current.push(choiceIndex)
                 currentQuizProgressDetail.outside = undefined
-                correctAnswerMp3.play()
+                currentQuizProgressDetail.wrongNum = undefined
+                playSE(correctAnswerMp3)
+                
+                if (choiceOrder.current.length === 9)
+                    currentQuizProgressDetail.clear = true
             } else if (outsider.current === choiceIndex) {
                 answerOrder.current.unshift(currentAnswer)
                 currentQuizProgressDetail.outside = true
-                wrongBuzzerMp3.play()
+                playSE(wrongBuzzerMp3)
             } else {
                 let beforeAnswer = currentQuizProgressDetail.selectedOrder!!.pop() 
-                if (beforeAnswer) {
+                if (beforeAnswer !== undefined) {
                     if (beforeAnswer === choiceIndex){
-                        correctAnswerMp3.play()
+                        playSE(correctAnswerMp3)
                     } else {
-                        wrongBuzzerMp3.play()
+                        currentQuizProgressDetail.failed = true
+                        currentQuizProgressDetail.wrongNum = choiceIndex
+                        playSE(wrongBuzzerMp3)
                     }
                     currentQuizProgressDetail.selectedOrder!!.push(beforeAnswer)
                 } else {
-                    wrongBuzzerMp3.play()
+                    currentQuizProgressDetail.failed = true
+                    currentQuizProgressDetail.wrongNum = choiceIndex
+                    playSE(wrongBuzzerMp3)
                 }
-
                 answerOrder.current.unshift(currentAnswer)
                 currentQuizProgressDetail.outside = undefined
             }
@@ -235,8 +253,6 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
             setProgressDetail(categoryId)
             return
         }
-
-        console.log("UNMATCH ANSWER OR ANSWER ORDER")
     }
 
     const onClickNext: () => void = () => {
@@ -245,6 +261,13 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
         currentQuizProgressDetail.choicedAnswer = [-1, -1]
         currentQuizProgressDetail.orderResult = undefined
         currentQuizProgressDetail.outside = undefined
+        currentQuizProgressDetail.clear = false
+        currentQuizProgressDetail.failed = false
+        currentQuizProgressDetail.wrongNum = undefined
+
+        if (currentQuizProgressDetail.progressNum % 7 === 0) {
+            currentQuizProgressDetail.progressNum += 1
+        }
         setProgressDetail(categoryId)
 
         if (currentMap) {
@@ -260,6 +283,9 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
             currentQuizProgressDetail.choicedAnswer = [-1, -1]
             currentQuizProgressDetail.orderResult = undefined
             currentQuizProgressDetail.outside = undefined
+            currentQuizProgressDetail.clear = false
+            currentQuizProgressDetail.failed = false
+            currentQuizProgressDetail.wrongNum = undefined
             setProgressDetail(categoryId)
 
             if (currentMap) {
@@ -271,6 +297,7 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
     const onClickReset: () => void = () => {
         currentQuizProgressDetail.quizMstIndex = 0
         currentQuizProgressDetail.correctedNum = 0
+        currentQuizProgressDetail.progressNum = 1
         setProgressDetail(categoryId)
 
         if (currentMap) {
@@ -300,7 +327,10 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
     }
 
     const onClickBackToGenre: () => void = () => {
+        isTop.current = false
+        currentQuizProgressDetail.isTop = false
         currentQuizProgressDetail.quizMstIndex = 0
+        currentQuizProgressDetail.showCorrect = false
         setProgressDetail(categoryId)
 
         setQuizId({quizId: -1})
@@ -318,11 +348,20 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
         })
 
         if (result) {
-            correctAnswerMp3.play()
+            playSE(correctAnswerMp3)
         } else {
-            wrongBuzzerMp3.play()
+            playSE(wrongBuzzerMp3)
         }
         currentQuizProgressDetail.orderResult = result
+        setProgressDetail(categoryId)
+    }
+
+    const onClickCorrect: () => void = () => {
+        currentQuizProgressDetail.showCorrect = true
+        if (categoryId === 2) 
+            currentQuizProgressDetail.choicedAnswer = [answerNum.current, answerNum.current]
+        if (categoryId === 3)
+            currentQuizProgressDetail.selectedOrder = answerOrder.current
         setProgressDetail(categoryId)
     }
 
@@ -334,6 +373,12 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
                 return str ? str : ''
             case 3:
             case 4:
+                if (currentQuizProgressDetail.wrongNum !== undefined) {
+                    if (choiceOrder.current.length === 0) {
+                        return (currentQuizProgressDetail.wrongNum + 1).toString()
+                    }
+                    return choiceOrder.current.map(n => n + 1).toString() + "," + (currentQuizProgressDetail.wrongNum + 1)
+                }
                 return choiceOrder.current.map(n => n + 1).toString()
             default:
                 return 'カテゴリを選択してください'
@@ -344,6 +389,11 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
         tmpQuizProgressMap.set(categoryId, currentQuizProgressDetail)
         const newMap = new Map(tmpQuizProgressMap)
         currentQuizProgress.setCurrentQuizProgressMap(newMap)
+    }
+
+    const playSE = (audio: HTMLAudioElement) => {
+        audio.currentTime = 0
+        audio.play()
     }
 
     return presenter({
@@ -358,6 +408,8 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
         onClickGenre,
         onClickBackToGenre,
         onClickDetermine,
+        onClickCorrect,
+        isTop: isTop.current,
         ...props})
 }
 

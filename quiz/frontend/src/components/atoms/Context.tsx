@@ -4,8 +4,16 @@ import {
     CommonApiResponse,
     Scenario,
     CurrentQuiz,
-    CurrentTimer, SetCurrentTimer,
-    CurrentQuizCategory, ContextQuizMst, CurrentQuizProgress, CurrentQuizProgressDetail, QuizResult, QuizMst } from '../objects/interfaces';
+    CurrentTimer,
+    SetCurrentTimer,
+    CurrentQuizCategory,
+    ContextQuizMst,
+    CurrentQuizProgress,
+    CurrentQuizProgressDetail,
+    QuizResult,
+    QuizMst,
+    Ticket,
+    TicketInfo } from '../objects/interfaces';
 
 // Context で利用する変数をオブジェクトごとに定義
 export type TimerContextProps = {
@@ -30,6 +38,10 @@ export type CurrentQuizProgressContextProps = {
 
 export type QuizResultContextProps = {
     quizResult: QuizResult
+}
+
+export type TicketContextProps = {
+    ticket: Ticket
 }
 
 const TimerContext = React.createContext<TimerContextProps>({
@@ -77,8 +89,17 @@ const QuizResultContext = React.createContext<QuizResultContextProps>({
         setResult: () => {}
     }});
 
+const TicketContext = React.createContext<TicketContextProps>({
+    ticket: {
+        ticketInfo: {
+            ticketNum: 0,
+            ticketDispFlg: false
+        },
+        setTicketInfo: () => {}
+    }
+});
+
 const ContextProvider: React.FC = ({children}) => {
-    console.log("Context")
 
     // タイマー
     const [timerFlg, setTimerFlg] = useState(false)
@@ -147,7 +168,7 @@ const ContextProvider: React.FC = ({children}) => {
             // ダミークイズ挿入
             let quizMstList = category.quizList
             const dummyQuiz: QuizMst = {
-                quizId: -1,
+                quizId: category.categoryId === 2 ? -2 : -1,
                 quizCategoryId: category.categoryId,
                 quizText: "",
                 choiceCount: 0,
@@ -173,12 +194,12 @@ const ContextProvider: React.FC = ({children}) => {
                 quizMstIndex: 0,
                 choicedAnswer: [-1, -1],
                 correctedNum: 0,
+                progressNum: 1,
                 genreList: category.categoryId === 2 ? genreList : undefined,
                 finishedGenreList: category.categoryId === 2 ? [] : undefined,
                 selectedOrder: category.categoryId === 3 || category.categoryId === 4 ? [] : undefined
             }
             newQuizProgressMap.set(category.categoryId, tmpDetail)
-            console.log(quizMstList)
         })
         currentQuizContext.setCategoryCurrentMap(() => newCategoryCurrentMap)
         currentQuizProgress.setCurrentQuizProgressMap(() => newQuizProgressMap)
@@ -190,6 +211,12 @@ const ContextProvider: React.FC = ({children}) => {
         result: result,
         setResult: setResult
     }
+
+    const [ticketInfo, setTicketInfo] = React.useState<TicketInfo>({ticketNum: 0, ticketDispFlg: false})
+    const ticket = {
+        ticketInfo,
+        setTicketInfo
+    }
     
     return (
         <CurrentQuizCategoryContext.Provider value={{currentQuizCategory}}>
@@ -198,7 +225,9 @@ const ContextProvider: React.FC = ({children}) => {
                     <QuizResultContext.Provider value={{quizResult}}>
                         <TimerContext.Provider value={{timerContext}}>
                             <SetTimerContext.Provider value={{setTimerContext}}>
-                            {children}
+                                <TicketContext.Provider value={{ticket}} >
+                                    {children}
+                                </TicketContext.Provider>
                             </SetTimerContext.Provider>
                         </TimerContext.Provider>
                     </QuizResultContext.Provider>
@@ -214,7 +243,14 @@ const useCurrentQuizCategoryContext = () => useContext<CurrentQuizCategoryContex
 const useCurrentQuizContext = () => useContext<CurrentQuizContextProps>(CurrentQuizContext)
 const useCurrentQuizProgressContext = () => useContext<CurrentQuizProgressContextProps>(CurrentQuizProgressContext)
 const useQuizResultContext = () => useContext<QuizResultContextProps>(QuizResultContext)
+const useTicketContext = () => useContext<TicketContextProps>(TicketContext)
 
-export { ContextProvider,
-    useTimerContext, useSetTimerContext,
-    useCurrentQuizCategoryContext, useCurrentQuizContext, useCurrentQuizProgressContext, useQuizResultContext }
+export {
+    ContextProvider,
+    useTimerContext,
+    useSetTimerContext,
+    useCurrentQuizCategoryContext,
+    useCurrentQuizContext,
+    useCurrentQuizProgressContext,
+    useQuizResultContext,
+    useTicketContext }

@@ -7,8 +7,9 @@ import Grid from '@material-ui/core/Grid';
 import TimerBgmControlArea from './TimerBgmControlArea';
 import QuizCategoryAnchor from '../atoms/QuizCategoryAnchor';
 import { ContextQuizMst } from '../objects/interfaces';
-import { useCurrentQuizContext } from '../atoms/Context'
+import { useCurrentQuizCategoryContext, useCurrentQuizContext, useCurrentQuizProgressContext } from '../atoms/Context'
 import AnswerArea from './AnswerArea';
+import InformationArea from './InformationArea';
 
 type ComponentProps = {}
 
@@ -24,7 +25,6 @@ type PresenterProps = {
 // TODO: onClick
 const QuizCategoryAreaCall = (categories: Category[]) => {
     const newCategories = categories
-    console.log("categoryAreaCalled")
     const nodes = newCategories.map((category, index) => {
         return (
             <QuizCategoryAnchor key={index} categoryId={category.id} text={category.text}/>
@@ -57,7 +57,8 @@ const ControlAreaPresenter: React.FC<PresenterProps> = ({categories}) => (
                 </Grid>
                 <Grid item xs={3}>
                     {/*情報エリア */}
-                    <div style={{backgroundColor: "#0F0", width: "100%", height: "24vh"}}></div>
+                    {/* <div style={{backgroundColor: "#FFF", width: "100%", height: "24vh"}}></div> */}
+                    <InformationArea />
                 </Grid>
             </Grid>
         </FlexGrowArea>
@@ -71,22 +72,16 @@ const ControlAreaPresenter: React.FC<PresenterProps> = ({categories}) => (
 )
 
 const QuizCategoryArea = styled.div`
-    height: 24vh;
+    height: 23vh;
     overflow: scroll;
 `
-// font-family: 'myfont';
-// @font-face {
-//     font-family: 'myfont';
-//     src: url('../GD-TiVangerionJA-010.otf');
-// }
-
 
 const ControlAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = (props) => {
-    console.log("ControlArea Container")
     const [categoryList, setCategoryList] = React.useState<Category[]>([{id: 0, text: ""}])
     const {currentQuizContext} = useCurrentQuizContext()
+    const {currentQuizCategory} = useCurrentQuizCategoryContext()
+
     React.useEffect(() => {
-        console.log("control gets quiz data")
 
         const newCategoryList: Category[] = new Array();
         const setCurrentQuizCategoryId = (value: ContextQuizMst, key: number) => {

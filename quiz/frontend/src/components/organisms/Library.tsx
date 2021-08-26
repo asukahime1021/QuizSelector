@@ -10,6 +10,7 @@ type ComponentProps = {
     onClickNext: () => void
     onClickPrev: () => void
     onClickDetermine: () => void
+    onClickCorrect: () => void
 }
 
 type PresenterProps = ComponentProps
@@ -21,7 +22,8 @@ const LibraryPresenter: React.FC<PresenterProps> = ({
     finished,
     onClickNext,
     onClickPrev,
-    onClickDetermine}) => (
+    onClickDetermine,
+    onClickCorrect}) => (
     <div>
         {
             choiceList.map((value, index) => (
@@ -39,6 +41,7 @@ const LibraryPresenter: React.FC<PresenterProps> = ({
                 <span>
                     <PrimaryButton onClick={onClickPrev}>戻る</PrimaryButton>
                     <PrimaryButton onClick={onClickDetermine}>決定</PrimaryButton>
+                    <PrimaryButton onClick={onClickCorrect}>正解表示</PrimaryButton>
                 </span>
             :
                 <span></span>

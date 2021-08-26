@@ -5,11 +5,12 @@ import { makeStyles, createStyles } from '@material-ui/core/styles'
 import Select from '@material-ui/core/Select';
 import { ClassNameMap } from '@material-ui/styles';
 import BgmSquare from './BgmSquare';
+import TicketSquare from './TicketSquare';
 
 type ComponentProps = {}
 type PresenterProps = {
     onChangeSelect: (event: React.ChangeEvent<{value: unknown}>) => void
-    isTimer: boolean
+    selectNum: string
     classes: ClassNameMap
 }
 
@@ -22,16 +23,12 @@ const useStyled = makeStyles(() => {
     })
 })
 
-const TimerBgmControlAreaPresenter: React.FC<PresenterProps> = ({onChangeSelect, isTimer, classes, ...props}) => (
+const TimerBgmControlAreaPresenter: React.FC<PresenterProps> = ({onChangeSelect, selectNum, classes, ...props}) => (
     <div style={{marginLeft: "3vh"}} {...props}>
         <div style={{height: "110px"}}>
-        {
-            isTimer
-            ?
-            <TimerSquare />
-            :
-            <BgmSquare />
-        }
+        {selectNum === "1" && <TimerSquare />}
+        {selectNum === "2" && <TicketSquare />}
+        {selectNum === "3" && <BgmSquare /> }
         </div>
         <Select
           autoWidth 
@@ -40,7 +37,8 @@ const TimerBgmControlAreaPresenter: React.FC<PresenterProps> = ({onChangeSelect,
           defaultValue="1"
           >
             <option value="1" style={{fontSize: "7px"}}>タイマー</option>
-            <option value="2" style={{fontSize: "7px"}}>BGM</option>
+            <option value="2" style={{fontSize: "7px"}}>パスチケット</option>
+            <option value="3" style={{fontSize: "7px"}}>BGM</option>
         </Select>
     </div>
 )
@@ -57,7 +55,7 @@ const TimerBgmControlAreaContainer: React.FC<ContainerComponentProps> = ({presen
     const classes = useStyled();
 
     return presenter({onChangeSelect: onChangeSelect,
-        isTimer: currentComponent === "1",
+        selectNum: currentComponent,
         classes: classes,
          ...props})
 }

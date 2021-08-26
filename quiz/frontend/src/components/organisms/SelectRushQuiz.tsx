@@ -2,6 +2,9 @@ import React from 'react';
 import { container, ContainerProps } from '../component';
 import styled from 'styled-components';
 import SRProgress from '../molecules/SRProgress';
+import SentenceInnerStyled from '../atoms/SentenceInnerStyled';
+import { useCurrentQuizProgressContext } from '../atoms/Context';
+import TitleLogo from '../atoms/TitleLogo';
 
 type ComponentProps = {
     sentence: string
@@ -13,6 +16,7 @@ type PresenterProps = {
     sentence: string
     srChoiceList: SRChoice[]
     dispImgInfo: [number, string]
+    progress: number
 }
 
 const SentenceStyled = styled.div`
@@ -21,12 +25,12 @@ const SentenceStyled = styled.div`
     color: white;
     padding-top: 3vh;
     text-align: center;
-    font-family: 'timer';
     background-image: url("img/01_question.png");
     background-size: cover;
+    font-family: 'timer';
     @font-face {
         font-family: 'timer';
-        src: url('NitalagoRuika-06M.TTF');
+        src: url('${process.env.PUBLIC_URL}/font/NitalagoRuika-06M.TTF');
     }
 `
 
@@ -44,7 +48,7 @@ const ImgLabel = styled.div`
     font-family: 'timer';
     @font-face {
         font-family: 'timer';
-        src: url('NitalagoRuika-06M.TTF');
+        src: url('font/NitalagoRuika-06M.TTF');
     }
 `
 
@@ -79,9 +83,17 @@ interface SRChoice {
     frame: string
 }
 
-const SelectRushQuizPresenter: React.FC<PresenterProps> = ({sentence, srChoiceList, dispImgInfo}) => (
+const SelectRushQuizPresenter: React.FC<PresenterProps> = ({sentence, srChoiceList, dispImgInfo, progress}) => (
     <div style={{position: "relative", height: "100%"}}>
-        <SentenceStyled>{sentence}</SentenceStyled>
+        {srChoiceList.length > 0
+            ?
+            <SentenceStyled>
+                <SentenceInnerStyled>
+                    {sentence}
+                </SentenceInnerStyled>
+            </SentenceStyled>
+            : <span></span>
+        }
         <UpperChoices>
         {srChoiceList.map((sr, index) => {
             if (index < 2) {
@@ -97,7 +109,7 @@ const SelectRushQuizPresenter: React.FC<PresenterProps> = ({sentence, srChoiceLi
                     </ImgSpan>    
                 )
             }
-            return <span></span>
+            return <span key={index}></span>
         })}
         </UpperChoices>
         <LowerChoices>
@@ -115,12 +127,18 @@ const SelectRushQuizPresenter: React.FC<PresenterProps> = ({sentence, srChoiceLi
                     </ImgSpan>    
                 )
             }
-            return <span></span>
+            return <span key={index}></span>
         })}
         </LowerChoices>
-        <div style={{position: "absolute", bottom: "25vh", paddingLeft: "5vh", paddingRight: "14vh"}}>
-            <SRProgress />
-        </div>
+        {
+            srChoiceList.length > 0
+            ?
+            <div style={{position: "absolute", bottom: "25vh", paddingLeft: "5vh", paddingRight: "14vh"}}>
+                <SRProgress progress={progress}/>
+            </div>
+            :
+            <TitleLogo src="img/01_logo.png" />
+        }
     </div>
 )
 
@@ -142,7 +160,13 @@ const SelectRushQuizContainer: React.FC<ContainerProps<ComponentProps, Presenter
         }
     }
 
-    return presenter({sentence: sentence, srChoiceList: dispChoiceList, dispImgInfo, ...props})
+    const tmpProgress = useCurrentQuizProgressContext().currentQuizProgress.currentQuizProgressMap!!.get(1)?.progressNum
+    let progress = 0
+    if (tmpProgress) {
+        progress += tmpProgress
+    }
+
+    return presenter({sentence: sentence, srChoiceList: dispChoiceList, dispImgInfo, progress: progress, ...props})
 }
 
 const SelectRushQuiz: React.FC<ComponentProps> = container(

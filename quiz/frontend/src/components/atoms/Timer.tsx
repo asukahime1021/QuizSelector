@@ -30,7 +30,7 @@ const TimerStyled = styled(TimerPresenter)`
         line-height: 8vh;
         z-index: 1;
         position: relative;
-        background-image: url("00_second.png"), url("00_time.png");
+        background-image: url("img/00_second.png"), url("img/00_time.png");
         background-repeat: no-repeat;
         background-size: 3vh, cover;
         background-position: 15vh 4vh, 0 0;
@@ -39,7 +39,7 @@ const TimerStyled = styled(TimerPresenter)`
         color: red;
         @font-face {
             font-family: 'timer';
-            src: url('NitalagoRuika-06M.TTF');
+            src: url('font/NitalagoRuika-06M.TTF');
         }
     }
     span {
@@ -66,7 +66,7 @@ const TimerContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> =
 
     useEffect(() => {
         timeRef.current = localTime
-    }, [localTime])
+    }, [timerContext.time])
 
     useEffect(() => {
         if (timerContext.timerDispFlg) {
@@ -83,7 +83,6 @@ const TimerContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> =
             return;
         }
         clearInterval(timeIntervalRef.current)
-        setLocalTime(timeRef.current)
     }, [timerContext.timerFlg])
     /* eslint-enable */
     

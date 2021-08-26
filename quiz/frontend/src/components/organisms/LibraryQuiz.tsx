@@ -1,6 +1,8 @@
 import React from 'react';
 import { container, ContainerProps } from '../component';
 import styled from 'styled-components'
+import SentenceInnerStyled from '../atoms/SentenceInnerStyled';
+import TitleLogo from '../atoms/TitleLogo';
 
 type ComponentProps = {
     sentence: string
@@ -20,7 +22,7 @@ const WrapperDiv = styled.div`
     font-family: 'timer';
     @font-face {
         font-family: 'timer';
-        src: url('NitalagoRuika-06M.TTF');
+        src: url('font/NitalagoRuika-06M.TTF');
     }
 `
 
@@ -73,7 +75,15 @@ const CorrectWrongImg = styled.img`
 
 const LibraryQuizPresenter: React.FC<PresenterProps> = ({sentence, choiceList, selectedList, orderList, pathList, correctWrongImgPath}) => (
     <WrapperDiv>
-        <SentenceStyled>{sentence}</SentenceStyled>
+        {choiceList.length === 0
+        ? <TitleLogo src="img/03_logo.png" />
+        : <span></span>
+        }
+        <SentenceStyled>
+            <SentenceInnerStyled>
+                {sentence}
+            </SentenceInnerStyled>
+        </SentenceStyled>
         <CorrectWrongImg src={correctWrongImgPath} />
         <ChoiceDiv top={31} left={8}><ChoiceInnerDiv selected={false}>{choiceList[0]}</ChoiceInnerDiv></ChoiceDiv>
 
@@ -144,7 +154,6 @@ const LibraryQuizContainer: React.FC<ContainerProps<ComponentProps, PresenterPro
     let correctWrongPath: string = ""
     if (correctWrongFlg !== undefined) {
         correctWrongPath = correctWrongFlg ? "img/correct_answer.png" : "img/wrong_answer.png"
-        console.log("answer : " + correctWrongPath)
     }
     return presenter({orderList, pathList, correctWrongImgPath: correctWrongPath, ...props})
 }

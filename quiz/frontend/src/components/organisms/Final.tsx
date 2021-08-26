@@ -31,7 +31,6 @@ const FinalPresenter: React.FC<PresenterProps> = ({choiceList, onClickAnswer, pr
             ?
                 <span>
                     <PrimaryButton onClick={onClickPrev}>戻る</PrimaryButton>
-                    <PrimaryButton onClick={onClickDetermine}>決定</PrimaryButton>
                 </span>
             :
                 <span></span>

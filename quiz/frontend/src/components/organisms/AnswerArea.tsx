@@ -21,7 +21,6 @@ const AnswerAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterProp
 
     if ((currentQuizCategory.currentQuizCategoryId === null || currentQuizCategory.currentQuizCategoryId === 0) && !initialized) {
         setInitialized(true)
-        console.log("Default panel")
         setChild(DefaultPanel);
     }
 

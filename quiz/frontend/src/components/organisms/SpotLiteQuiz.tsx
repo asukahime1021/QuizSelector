@@ -1,6 +1,9 @@
 import React from 'react'
 import { container, ContainerProps } from '../component'
 import styled from 'styled-components'
+import SentenceInnerStyled from '../atoms/SentenceInnerStyled'
+import { useCurrentQuizProgressContext } from '../atoms/Context'
+import TitleLogo from '../atoms/TitleLogo'
 
 type ComponentProps = {
     genreList: string[]
@@ -9,6 +12,7 @@ type ComponentProps = {
     selectedGenre: number| undefined
     choicedAnswer: [number, number]
     finishedGenreList: number[]
+    showCorrect: boolean
 }
 
 type PresenterProps = {
@@ -18,6 +22,7 @@ type PresenterProps = {
     selectedGenre: number| undefined
     dispImgInfo: [number, string]
     finishedFlgList: boolean[]
+    correct: boolean
 }
 
 const SentenceStyled = styled.div`
@@ -72,7 +77,7 @@ const GenreP = styled.p`
     font-family: 'timer';
     @font-face {
         font-family: 'timer';
-        src: url('NitalagoRuika-06M.TTF');
+        src: url('font/NitalagoRuika-06M.TTF');
     }
 `
 
@@ -94,7 +99,7 @@ const SpotLightDiv = styled.div`
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    z-index: 2;
+    z-index: 3;
 `
 
 const SpotLightImg = styled.img`
@@ -108,16 +113,26 @@ const SpotLiteParent = styled.div`
     padding-bottom: 0.1vh;
 `
 
-const CorrectWrongImg = styled.img`
+const CorrectWrongImg = styled.img<{correct: boolean}>`
     display: block;
     position: absolute;
+    top: ${props => props.correct ? 0 : -2}vh;
     max-width: 100%;
     z-index: 1;
 `
 
-const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, choiceList, selectedGenre, dispImgInfo, finishedFlgList}) => (
+const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, choiceList, selectedGenre, dispImgInfo, finishedFlgList, correct}) => (
     <SpotLiteParent>
-        <SentenceStyled>{sentence}</SentenceStyled>
+        {
+            genreList.length === 0 && choiceList.length === 0
+            ? <TitleLogo src="img/02_logo.png" />
+            : <span></span>
+        }
+        <SentenceStyled>
+            <SentenceInnerStyled>
+                {sentence}
+            </SentenceInnerStyled>
+        </SentenceStyled>
         {
             genreList.length > 0 ?
             <div>
@@ -141,7 +156,7 @@ const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, c
                         </GenreLi>
                         )
                     }
-                    return <span></span>
+                    return <span key={index}></span>
                 })}
             </ul>
             <ul style={{display: 'flex', justifyContent: 'center', listStyle: 'none', flexWrap: 'wrap', marginLeft: '-3vh'}}>
@@ -164,7 +179,7 @@ const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, c
                         </GenreLi2>
                         )
                     }
-                    return <span></span>
+                    return <span key={index}></span>
                 })}
             </ul>
         </div>
@@ -180,7 +195,7 @@ const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, c
                         <SelectLi key={index}>
                             {
                                 dispImgInfo[0] === index
-                                ? <CorrectWrongImg src={dispImgInfo[1]}/>
+                                ? <CorrectWrongImg src={dispImgInfo[1]} correct={correct} />
                                 : <span></span>
                             }
                             <GenreImg src="img/02_select.png" />
@@ -193,7 +208,7 @@ const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, c
                         </SelectLi>
                         )
                     }
-                    return <span></span>
+                    return <span key={index}></span>
                 })}
             </ul>
             <ul style={{display: 'flex', justifyContent: 'center', listStyle: 'none', flexWrap: 'wrap', marginLeft: '-3vh'}}>
@@ -203,7 +218,7 @@ const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, c
                         <SelectLi key={index}>
                             {
                                 dispImgInfo[0] === index
-                                ? <CorrectWrongImg src={dispImgInfo[1]}/>
+                                ? <CorrectWrongImg src={dispImgInfo[1]} correct={correct} />
                                 : <span></span>
                             }
                             <GenreImg src="img/02_select.png" />
@@ -216,7 +231,7 @@ const SpotLiteQuizPresenter: React.FC<PresenterProps> = ({sentence, genreList, c
                         </SelectLi>
                         )
                     }
-                    return <span></span>
+                    return <span key={index}></span>
                 })}
             </ul>
         </div>
@@ -236,12 +251,15 @@ const SpotLiteQuizContainer: React.FC<ContainerProps<ComponentProps, PresenterPr
     selectedGenre,
     choicedAnswer,
     finishedGenreList,
+    showCorrect,
     ...props}) => {
     
     let dispImgInfo: [number, string] = [-1, ""]
+    let correct = false
     if (choicedAnswer[0] !== -1) {
-        if (choicedAnswer[0] === choicedAnswer[1]) {
+        if (choicedAnswer[0] === choicedAnswer[1] || showCorrect) {
             dispImgInfo = [choicedAnswer[0], "img/02_selectlight0" + (choicedAnswer[1] + 1) + ".png"]
+            correct = true
         } else {
             dispImgInfo = [choicedAnswer[0], "img/wrong_answer.png"]
         }
@@ -249,7 +267,7 @@ const SpotLiteQuizContainer: React.FC<ContainerProps<ComponentProps, PresenterPr
 
     const finishedFlgList = [false, false, false, false, false, false, false]
     finishedGenreList.map(num => finishedFlgList[num - 1] = true)
-    return presenter({sentence, genreList, choiceList, selectedGenre, dispImgInfo, finishedFlgList, ...props})
+    return presenter({sentence, genreList, choiceList, selectedGenre, dispImgInfo, finishedFlgList, correct, ...props})
 }
 
 const SpotLiteQuiz: React.FC<ComponentProps> = container(
