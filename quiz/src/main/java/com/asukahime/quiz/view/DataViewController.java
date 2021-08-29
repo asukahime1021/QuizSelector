@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.asukahime.quiz.base.ApplicationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
@@ -42,7 +43,7 @@ public class DataViewController {
 				final ScenarioEntity scenario = scenarioEntityList.get(i - 1);
 				final int scenarioId = scenario.getScenarioId();
 				final ScenarioResponseDto dto = new ScenarioResponseDto();
-				dto.setRowNum(i);
+				dto.setRowNum(scenarioId);
 				dto.setScenarioName(scenario.getScenarioName());
 
 				dto.setRushList(createQuizTextList(scenarioId, 1));
@@ -112,6 +113,23 @@ public class DataViewController {
 		mav.addObject("liteQuizList", liteList);
 		mav.addObject("libraQuizList", libraList);
 		mav.addObject("finalQuizList", finalList);
+		mav.addObject("dataViewForm", new DataViewForm());
+		return mav;
+	}
+
+	@RequestMapping(value = "scenariodelete", method = RequestMethod.POST)
+	public ModelAndView delete(
+			@NonNull final ModelAndView mav,
+			@NonNull final DataViewForm form
+	) {
+		final String scenarioIdStr = form.getScenarioId();
+		if (scenarioIdStr == null) {
+			mav.addObject("error", "シナリオIDが不正です");
+		}
+
+		scenarioService.delete(Integer.parseInt(scenarioIdStr));
+
+		mav.setViewName("redirect:top");
 		return mav;
 	}
 

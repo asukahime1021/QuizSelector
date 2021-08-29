@@ -115,6 +115,7 @@ interface CurrentQuizProgressDetail {
     answerNum?: number
     // 正解順位
     answerOrder?: number[]
+    answerOrderCurrent?: number[]
     // Final失敗
     failed?: boolean
     wrongNum?: number

@@ -26,9 +26,9 @@ const InformationAreaContainer: React.FC<ContainerProps<ComponentProps, Presente
         answerString = "正解：" + (progressDetail.answerNum + 1)
     }
 
-    if (progressDetail && progressDetail.answerOrder && (categoryId === 3 || categoryId === 4)) {
+    if (progressDetail && progressDetail.answerOrderCurrent && (categoryId === 3 || categoryId === 4)) {
         answerString = "正解順序："
-        progressDetail.answerOrder!!.map((order, index, arr) => {
+        progressDetail.answerOrderCurrent.map((order, index, arr) => {
             answerString = answerString + (order + 1);
             if (index < arr.length - 1) {
                 answerString = answerString + ","

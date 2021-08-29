@@ -46,6 +46,7 @@ public class ScenarioEditController {
 	public ModelAndView doPost(@NonNull final ModelAndView mav,
 			@NonNull final ScenarioEditForm form) {
 		commonScenarioAttribute(mav, form);
+		setQuizMap(mav);
 
 		final List<String> errors = scenarioCreateService.create(form);
 		if (!errors.isEmpty()) {
@@ -53,7 +54,6 @@ public class ScenarioEditController {
 			mav.addObject("isError", true);
 			return mav;
 		}
-		setQuizMap(mav);
 		mav.addObject("success", true);
 		return mav;
 	}

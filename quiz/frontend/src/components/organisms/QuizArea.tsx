@@ -70,13 +70,13 @@ const QuizAreaPresenter: React.FC<PresenterProps> = ({
 
 const TimerArea = styled.div`
     position: absolute;
-    top:0.5rem;
+    top:1.5vh;
     right:-0%;
 `
 
 const TicketArea = styled.div`
     position: absolute;
-    top: 4rem;
+    top: 9.5vh;
     right: -0%;
 `
 

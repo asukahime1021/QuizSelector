@@ -1,7 +1,7 @@
 import React from 'react'
 import { container, ContainerProps } from '../component'
-import { useCurrentQuizContext, useCurrentQuizProgressContext, useQuizResultContext } from '../atoms/Context'
-import { CurrentQuizProgressDetail, QuizMst } from '../objects/interfaces'
+import { useCurrentQuizContext, useCurrentQuizProgressContext, useQuizResultContext, useSetTimerContext, useTimerContext } from '../atoms/Context'
+import { CurrentQuizProgressDetail, CurrentTimer, QuizMst, SetCurrentTimer } from '../objects/interfaces'
 import styled from 'styled-components'
 import SelectRush from './SelectRush'
 import Library from './Library'
@@ -70,6 +70,8 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
     const currentQuizContext = useCurrentQuizContext().currentQuizContext
     const currentQuizProgress = useCurrentQuizProgressContext().currentQuizProgress
     const quizResult = useQuizResultContext().quizResult
+    const timerContext: CurrentTimer = useTimerContext().timerContext
+    const setTimerContext: SetCurrentTimer = useSetTimerContext().setTimerContext
     const tmpQuizProgressMap = new Map(currentQuizProgress.currentQuizProgressMap)
 
     const choiceCount = React.useRef(0);
@@ -129,6 +131,7 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
         answerNum.current = newQuizMst.choiceList.findIndex(choice => choice.answer)
         currentQuizProgressDetail.answerNum = answerNum.current
         currentQuizProgressDetail.answerOrder = answerOrder.current.slice()
+        currentQuizProgressDetail.answerOrderCurrent = answerOrder.current;
     
         const newChoiceList: number[] = []
         for (let i = 0; i < choiceCount.current; i++) {
@@ -171,9 +174,13 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
     // 押下した選択肢の配列インデックスがわたってくる
     const CheckAnswer: (arg: number) => void = (choiceNum: number) => {
 
+        currentQuizProgressDetail.showCorrect = undefined
         const choiceIndex = choiceNum - 1
 
         if (categoryId === 1 || categoryId === 2) {
+            // タイマーストップ
+            timerStop()
+
             if (choiceIndex === answerNum.current) {
                 quizResult.setResult(1)
                 playSE(correctAnswerMp3)
@@ -222,11 +229,14 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
                 currentQuizProgressDetail.wrongNum = undefined
                 playSE(correctAnswerMp3)
                 
-                if (choiceOrder.current.length === 9)
+                if (choiceOrder.current.length === 9) {
                     currentQuizProgressDetail.clear = true
+                    timerStop()
+                }
             } else if (outsider.current === choiceIndex) {
                 answerOrder.current.unshift(currentAnswer)
                 currentQuizProgressDetail.outside = true
+                timerStop()
                 playSE(wrongBuzzerMp3)
             } else {
                 let beforeAnswer = currentQuizProgressDetail.selectedOrder!!.pop() 
@@ -236,12 +246,14 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
                     } else {
                         currentQuizProgressDetail.failed = true
                         currentQuizProgressDetail.wrongNum = choiceIndex
+                        timerStop()
                         playSE(wrongBuzzerMp3)
                     }
                     currentQuizProgressDetail.selectedOrder!!.push(beforeAnswer)
                 } else {
                     currentQuizProgressDetail.failed = true
                     currentQuizProgressDetail.wrongNum = choiceIndex
+                    timerStop()
                     playSE(wrongBuzzerMp3)
                 }
                 answerOrder.current.unshift(currentAnswer)
@@ -352,12 +364,16 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
         } else {
             playSE(wrongBuzzerMp3)
         }
+
+        timerStop()
+
         currentQuizProgressDetail.orderResult = result
         setProgressDetail(categoryId)
     }
 
     const onClickCorrect: () => void = () => {
         currentQuizProgressDetail.showCorrect = true
+        currentQuizProgressDetail.orderResult = undefined
         if (categoryId === 2) 
             currentQuizProgressDetail.choicedAnswer = [answerNum.current, answerNum.current]
         if (categoryId === 3)
@@ -382,6 +398,15 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
                 return choiceOrder.current.map(n => n + 1).toString()
             default:
                 return 'カテゴリを選択してください'
+        }
+    }
+
+    const timerStop = () => {
+        // タイマーストップ
+        const {timerFlg} = timerContext
+        const {setTimerFlg} = setTimerContext
+        if (timerFlg) {
+            setTimerFlg(timerFlg => !timerFlg)
         }
     }
 

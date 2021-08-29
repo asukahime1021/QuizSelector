@@ -99,11 +99,33 @@ public class ScenarioService extends AbstractService {
 	}
 
 	/**
+	 * シナリオと紐づくステップを削除します。
+	 * @param scenarioId
+	 * @return
+	 */
+	public boolean delete(final Integer scenarioId) {
+		final ScenarioEntity scenario = scenarioRepository.findById(scenarioId).orElse(null);
+		if (scenario == null) {
+			return false;
+		}
+
+		scenarioRepository.delete(scenario);
+
+		final List<ScenarioStepEntity> stepList = scenarioStepRepository.findByScenarioId(scenarioId);
+		stepList.forEach(step -> {
+			scenarioStepRepository.delete(step);
+		});
+
+		return true;
+	}
+
+	/**
 	 * Scenario のID採番
 	 * @return
 	 */
 	private int getNextScenarioId() {
-		return (int)scenarioRepository.count() + 1;
+		final int maxId = scenarioRepository.getMaxId();
+		return maxId + 1;
 	}
 
 	/**
@@ -111,7 +133,7 @@ public class ScenarioService extends AbstractService {
 	 * @return
 	 */
 	private int getNextScenarioStepId() {
-		return (int)scenarioStepRepository.count() + 1;
+		return scenarioStepRepository.getMaxId() + 1;
 	}
 
 	/**

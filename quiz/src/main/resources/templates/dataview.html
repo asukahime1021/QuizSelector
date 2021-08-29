@@ -5,14 +5,24 @@
 <title>登録データ一覧</title>
 <style>
 	body {
-		text-align: center;
+		margin: 0 auto;
+		margin-top: 10px;
+		width: 1000px;
+	}
+	div.left {
+		text-align: left;
 	}
 	label.block{
 		display:block;
 		font-size: 0.8rem;
 	}
+	label.under{
+		margin-top: 20px;
+		border-bottom: 1px solid #777;
+	}
 	button {
 		margin-top: 10px;
+		margin-left: 10px;
 		padding: 5px;
 		background: #3C86F5;
 		border: 1px solid #3C86F5;
@@ -27,6 +37,9 @@
 		margin-right: auto;
 		margin-top: 10px;
 		border-left: 1px solid #ddd;
+		border-collapse: collapse;
+		table-layout: auto;
+		width: 1000px;
 	}
 	td {
 		text-align: left;
@@ -34,6 +47,8 @@
 		border-bottom: 1px solid #ddd;
 		padding: 8px;
 		max-width: 300px;
+		border-collapse: collapse;
+		vertical-align: top;
 	}
 	th {
 		border-top: 1px solid #ddd;
@@ -41,6 +56,10 @@
 		border-bottom: 1px solid #ddd;
 		padding: 8px 10px;
 		text-align: left;
+		border-collapse: collapse;
+	}
+	.question_sentence {
+		width: 150px;
 	}
 	#scenariodisparea {
 		display: none;
@@ -91,16 +110,17 @@
 </script>
 </head>
 <body>
-	<div id="selectarea">
+	<div id="selectarea" class="left">
+		<label class="block under">表示対象</label>
 		<input type="radio" name="selectdisp" value="1"><span>シナリオ</span>&nbsp&nbsp
 		<input type="radio" name="selectdisp" value="2"><span>クイズ</span>
-		<div>
-			<button id="dispBtn" onclick="switchDisp()" >表示</button>
-		</div>
+		<button id="dispBtn" onclick="switchDisp()" >表示</button>
+		<label class="block under">登録画面</label>
 		<div>
 			<button id="toQuizEdit" onclick="redirectToQuizEdit()" >クイズ登録へ</button>
 			<button id="toScenarioEdit" onclick="redirectToScenarioEdit()" >シナリオ登録へ</button>
 		</div>
+		<label class="block under">クイズ画面</label>
 		<div>
 			<div class="space"></div>
 			<label class="block">シナリオIDを選択</label>
@@ -115,7 +135,7 @@
 		<table>
 			<thead>
 				<tr>
-					<th>問題文</th>
+					<th class="question_sentence">問題文</th>
 					<th>選択肢1</th>
 					<th>選択肢2</th>
 					<th>選択肢3</th>
@@ -133,14 +153,13 @@
 		<table>
 			<thead>
 				<tr>
-					<th>問題文</th>
+					<th class="question_sentence">問題文</th>
 					<th>ジャンル</th>
 					<th>選択肢1</th>
 					<th>選択肢2</th>
 					<th>選択肢3</th>
 					<th>選択肢4</th>
 					<th>選択肢5</th>
-					<th>選択肢6</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -155,7 +174,7 @@
 		<table>
 			<thead>
 				<tr>
-					<th>問題文</th>
+					<th class="question_sentence">問題文</th>
 					<th>選択肢1</th>
 					<th>選択肢2</th>
 					<th>選択肢3</th>
@@ -180,7 +199,7 @@
 		<table>
 			<thead>
 				<tr>
-					<th>問題文</th>
+					<th class="question_sentence">問題文</th>
 					<th>選択肢1</th>
 					<th>選択肢2</th>
 					<th>選択肢3</th>
@@ -207,9 +226,11 @@
 			</tbody>
 		</table>
 	</div>
+	<form method="post" th:action="scenariodelete" th:object="${dataViewForm}">
 	<div class="scenario data" id="scenariodisparea">
 		<table>
 			<tr>
+				<th></th>
 				<th>NO</th>
 				<th>シナリオ名</th>
 				<th>セレクトラッシュ</th>
@@ -218,6 +239,7 @@
 				<th>FINAL</th>
 			</tr>
 			<tr th:each="scenario : ${scenarioList}">
+				<td><button type="submit" name="scenarioId" th:value="${scenario.rowNum}">削除</button></td>
 				<td th:text="${scenario.rowNum}"></td>
 				<td th:text="${scenario.scenarioName}"></td>
 				<td>
@@ -235,5 +257,6 @@
 			</tr>
 		</table>
 	</div>
+	</form>
 </body>
 </html>
