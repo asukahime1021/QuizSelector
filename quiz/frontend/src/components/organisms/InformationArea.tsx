@@ -1,5 +1,5 @@
 import React from 'react'
-import { useCurrentQuizCategoryContext, useCurrentQuizProgressContext } from '../atoms/Context'
+import { useCurrentQuizCategoryContext, useCurrentQuizProgressContext, useTicketContext } from '../atoms/Context'
 import { container, ContainerProps } from '../component'
 
 type ComponentProps = {
@@ -7,17 +7,24 @@ type ComponentProps = {
 
 type PresenterProps = {
     answerString: string
+    ticketString: string
 }
 
-const InformationAreaPresenter: React.FC<PresenterProps> = ({answerString}) => (
+const InformationAreaPresenter: React.FC<PresenterProps> = ({answerString, ticketString}) => (
     <div style={{marginTop: "3vh"}}>
-        {answerString}
+        <p>
+            {answerString}
+        </p>
+        <p>
+            {ticketString}
+        </p>
     </div>
 )
 
 const InformationAreaContainer: React.FC<ContainerProps<ComponentProps, PresenterProps>> = ({presenter, ...props}) => {
     const {currentQuizCategory} = useCurrentQuizCategoryContext()
     const {currentQuizProgress} = useCurrentQuizProgressContext()
+    const ticket = useTicketContext().ticket
     const categoryId = currentQuizCategory.currentQuizCategoryId
     const progressDetail = currentQuizProgress.currentQuizProgressMap.get(categoryId)
 
@@ -36,7 +43,9 @@ const InformationAreaContainer: React.FC<ContainerProps<ComponentProps, Presente
         })
     }
 
-    return presenter({answerString, ...props})
+    const ticketString = "チケット残数：" + ticket.ticketInfo.ticketNum
+
+    return presenter({answerString, ticketString, ...props})
 }
 
 const InformationArea: React.FC<ComponentProps> = container<ComponentProps, PresenterProps>(

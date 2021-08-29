@@ -16,11 +16,33 @@ type PresenterProps = ComponentProps
 
 const FinalPresenter: React.FC<PresenterProps> = ({choiceList, onClickAnswer, progressString, finished, onClickNext, onClickPrev, onClickDetermine}) => (
     <div>
-        {
-            choiceList.map((value, index) => (
-                <PrimaryButton key={index} onClick={() => onClickAnswer(value)}>{value.toString()}</PrimaryButton>
-            ))
-        }
+        <p>
+            {
+                choiceList.map((value, index) => (
+                    index < 4 ?
+                    <PrimaryButton key={index} onClick={() => onClickAnswer(value)}>{value.toString()}</PrimaryButton>
+                    : <span key={index}></span>
+                ))
+            }
+        </p>
+        <p style={{marginTop: "1vh"}}>
+            {
+                choiceList.map((value, index) => (
+                    index > 3 && index < 7 ?
+                            <PrimaryButton key={index} onClick={() => onClickAnswer(value)}>{value.toString()}</PrimaryButton>
+                    : <span key={index}></span>
+                ))
+            }
+        </p>
+        <p style={{marginTop: "1vh"}}>
+            {
+                choiceList.map((value, index) => (
+                    index > 6 ?
+                        <PrimaryButton key={index} onClick={() => onClickAnswer(value)}>{value.toString()}</PrimaryButton>
+                    : <span key={index}></span>
+                ))
+            }
+        </p>
         <p>
         <label>
             現在の選択順序：

@@ -89,6 +89,7 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
     // 正誤音源
     const correctAnswerMp3 = document.getElementById("correct_sound") as HTMLAudioElement;
     const wrongBuzzerMp3 = document.getElementById("wrong_buzzer") as HTMLAudioElement;
+    const clearMp3 = document.getElementById("clear_sound") as HTMLAudioElement;
 
     if (!tmpQuizProgressMap.has(categoryId)) {
         tmpQuizProgressMap.set(categoryId, { quizMstIndex: 0, correctedNum: 0, progressNum: 1, choicedAnswer: [-1, -1]})
@@ -227,11 +228,13 @@ const EachAnswerPanelContainer: React.FC<ContainerProps<ComponentProps, Presente
                 choiceOrder.current.push(choiceIndex)
                 currentQuizProgressDetail.outside = undefined
                 currentQuizProgressDetail.wrongNum = undefined
-                playSE(correctAnswerMp3)
                 
                 if (choiceOrder.current.length === 9) {
                     currentQuizProgressDetail.clear = true
                     timerStop()
+                    playSE(clearMp3)
+                } else {
+                    playSE(correctAnswerMp3)
                 }
             } else if (outsider.current === choiceIndex) {
                 answerOrder.current.unshift(currentAnswer)

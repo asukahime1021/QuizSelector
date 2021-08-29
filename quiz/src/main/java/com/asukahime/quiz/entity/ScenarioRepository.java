@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface ScenarioRepository extends JpaRepository<ScenarioEntity, Integer> {
 
     @Query(value = "SELECT max(SCENARIO_ID) FROM SCENARIO", nativeQuery = true)
-    public int getMaxId();
+    public Integer getMaxId();
 }

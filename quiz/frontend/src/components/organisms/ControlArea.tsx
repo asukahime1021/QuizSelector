@@ -68,6 +68,9 @@ const ControlAreaPresenter: React.FC<PresenterProps> = ({categories}) => (
         <audio id="wrong_buzzer" preload="auto">
             <source src="sound/wrong_buzzer.mp3" type="audio/mp3" />
         </audio>
+        <audio id="clear_sound" preload="auto">
+            <source src="sound/clear_sound.mp3" type="audio/mp3" />
+        </audio>
     </ControlAreaStyled>
 )
 

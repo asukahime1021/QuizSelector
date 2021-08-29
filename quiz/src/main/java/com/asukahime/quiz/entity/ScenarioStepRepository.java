@@ -17,5 +17,5 @@ public interface ScenarioStepRepository extends JpaRepository<ScenarioStepEntity
 			value = "SELECT max(scenario_step_id) from SCENARIO_STEP"
 			,nativeQuery = true
 	)
-	public int getMaxId();
+	public Integer getMaxId();
 }

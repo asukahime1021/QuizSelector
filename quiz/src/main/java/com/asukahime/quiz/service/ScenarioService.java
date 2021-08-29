@@ -124,8 +124,8 @@ public class ScenarioService extends AbstractService {
 	 * @return
 	 */
 	private int getNextScenarioId() {
-		final int maxId = scenarioRepository.getMaxId();
-		return maxId + 1;
+		final Integer maxId = scenarioRepository.getMaxId();
+		return maxId == null ? 1 : maxId + 1;
 	}
 
 	/**
@@ -133,7 +133,8 @@ public class ScenarioService extends AbstractService {
 	 * @return
 	 */
 	private int getNextScenarioStepId() {
-		return scenarioStepRepository.getMaxId() + 1;
+		final Integer stepId = scenarioStepRepository.getMaxId();
+		return stepId == null ? 1 : stepId + 1;
 	}
 
 	/**
